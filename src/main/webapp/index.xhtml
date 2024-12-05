@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<head>
+    <title>Login / Registration</title>
+    <meta charset="UTF-8"/>
+    <!-- Подключаем Bootstrap для стилей -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        .form-container {
+            max-width: 400px;
+            margin: 50px auto;
+        }
+        .form-container h3 {
+            text-align: center;
+        }
+        .switch-link {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .alert {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <!-- Форма входа -->
+    <h:form id="loginForm">
+        <h3>Login</h3>
+        <h:panelGrid columns="2" cellpadding="5" style="width: 100%;">
+            <h:outputLabel for="username" value="Username:"/>
+            <h:inputText id="username" value="#{userBean.username}" class="form-control" required="true" requiredMessage="Username is required."/>
+
+            <h:outputLabel for="password" value="Password:"/>
+            <h:inputSecret id="password" value="#{userBean.password}" class="form-control" required="true" requiredMessage="Password is required."/>
+
+            <h:commandButton value="Login" action="#{userBean.login}" class="btn btn-primary btn-block"/>
+
+            <h:message for="username" class="alert alert-danger" style="color: red;" />
+            <h:message for="password" class="alert alert-danger" style="color: red;" />
+        </h:panelGrid>
+        <span class="switch-link" onclick="showRegistrationForm()">Нет аккаунта? Зарегистрируйтесь</span>
+    </h:form>
+
+    <!-- Форма регистрации (скрыта по умолчанию) -->
+    <h:form id="registrationForm" style="display: none;">
+        <h3>Register</h3>
+        <h:panelGrid columns="2" cellpadding="5" style="width: 100%;">
+            <h:outputLabel for="newUsername" value="New Username:"/>
+            <h:inputText id="newUsername" value="#{userBean.newUsername}" class="form-control" required="true" requiredMessage="New username is required."/>
+
+            <h:outputLabel for="newPassword" value="New Password:"/>
+            <h:inputSecret id="newPassword" value="#{userBean.newPassword}" class="form-control" required="true" requiredMessage="New password is required."/>
+
+            <h:outputLabel for="confirmPassword" value="Confirm Password:"/>
+            <h:inputSecret id="confirmPassword" value="#{userBean.confirmPassword}" class="form-control" required="true" requiredMessage="Confirmation is required."/>
+
+            <h:commandButton value="Register" action="#{userBean.register}" class="btn btn-success btn-block"/>
+
+            <h:message for="newUsername" class="alert alert-danger" style="color: red;" />
+            <h:message for="newPassword" class="alert alert-danger" style="color: red;" />
+            <h:message for="confirmPassword" class="alert alert-danger" style="color: red;" />
+        </h:panelGrid>
+        <span class="switch-link" onclick="showLoginForm()">Есть аккаунт? Войдите</span>
+    </h:form>
+</div>
+
+<!-- Подключаем JS для переключения форм -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // Функция для переключения на форму регистрации
+    function showRegistrationForm() {
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('registrationForm').style.display = 'block';
+    }
+
+    // Функция для переключения на форму входа
+    function showLoginForm() {
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('registrationForm').style.display = 'none';
+    }
+</script>
+</body>
+</html>
