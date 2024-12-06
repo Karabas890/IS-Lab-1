@@ -10,6 +10,7 @@
         <class>entities.Person</class>
         <class>entities.Address</class>
         <class>entities.Location</class>
+        <class>entities.User</class>
         <!-- Параметры конфигурации EclipseLink -->
         <properties>
             <!-- Параметры подключения -->
@@ -23,6 +24,7 @@
             <property name="eclipselink.logging.level" value="FINE" />
             <property name="eclipselink.ddl-generation" value="create-tables" />
             <property name="eclipselink.ddl-generation.output-mode" value="database" />
+
         </properties>
     </persistence-unit>
 </persistence>
