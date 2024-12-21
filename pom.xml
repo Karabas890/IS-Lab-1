@@ -61,6 +61,13 @@
             <artifactId>primefaces</artifactId>
             <version>11.0.0</version> <!-- Проверьте последнюю версию на Maven Central -->
         </dependency>
+        <dependency>
+            <groupId>jakarta.faces</groupId>
+            <artifactId>jakarta.faces-api</artifactId>
+            <version>4.0.0</version> <!-- Убедитесь, что версия соответствует используемой версии -->
+        </dependency>
+
+
 
     </dependencies>
 

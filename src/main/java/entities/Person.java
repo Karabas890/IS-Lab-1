@@ -14,10 +14,12 @@ public class Person {
     @Column(nullable = false)
     private String name;
 
+    @Column(name="eye_color")
     @Enumerated(EnumType.STRING)
     private Color eyeColor;
 
     @Enumerated(EnumType.STRING)
+    @Column(name="hair_color")
     private Color hairColor;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -30,7 +32,7 @@ public class Person {
     @Column
     private Float weight;
 
-    @Column(nullable = false, unique = true, length = 33)
+    @Column(name="passport_id",nullable = false, unique = true, length = 33)
     private String passportID;
 
     // Геттеры и сеттеры

@@ -52,7 +52,7 @@ CREATE TABLE product (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
     coordinates_id INTEGER NOT NULL,
-    creation_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    creation_date DATE NOT NULL DEFAULT CURRENT_DATE,
     unit_of_measure VARCHAR(50),
     manufacturer_id INTEGER,
     price INTEGER NOT NULL,
@@ -64,3 +64,5 @@ CREATE TABLE product (
     FOREIGN KEY (manufacturer_id) REFERENCES organization (id),
     FOREIGN KEY (owner_id) REFERENCES person (id)
 );
+
+

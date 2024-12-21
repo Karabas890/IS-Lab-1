@@ -26,4 +26,13 @@ public class UserDAO implements Serializable {
 
         return users.isEmpty() ? null : users.get(0);
     }
+
+    public User findByUsername(String username) {
+        List<User> users = entityManager.createQuery(
+                        "SELECT u FROM User u WHERE u.username = :username", User.class)
+                .setParameter("username", username)
+                .getResultList();
+
+        return users.isEmpty() ? null : users.get(0);
+    }
 }

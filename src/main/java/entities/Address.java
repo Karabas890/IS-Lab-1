@@ -10,11 +10,11 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
+    @Column(name="zip_code", nullable = false)
     private String zipCode;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_id")
+    @JoinColumn(name = "town_id")
     private Location town;
 
     // Геттеры и сеттеры

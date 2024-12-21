@@ -12,25 +12,26 @@ public class Organization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name="name", nullable = false, unique = true)
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id")
+    @JoinColumn(name = "official_address_id")
     private Address officialAddress;
 
-    @Column(nullable = false)
+    @Column(name = "annual_turnover", nullable = false)
     private Float annualTurnover;
 
-    @Column(nullable = false)
+    @Column(name = "employees_count", nullable = false)
     private int employeesCount;
 
-    @Column(nullable = false)
+    @Column(name = "full_name",nullable = false)
     private String fullName;
 
-    @Column(nullable = false)
+    @Column(name = "rating",nullable = false)
     private Double rating;
 
+    @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private OrganizationType type;
 

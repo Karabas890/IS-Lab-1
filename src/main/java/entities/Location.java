@@ -11,16 +11,16 @@ public class Location {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
+    @Column(name="x", nullable = false)
     private Integer x;
 
-    @Column(nullable = false)
+    @Column(name="y", nullable = false)
     private Integer y;
 
-    @Column
+    @Column(name="z")
     private float z;
 
-    @Column(nullable = false)
+    @Column(name="name", nullable = false)
     private String name;
 
     // Геттеры и сеттеры
