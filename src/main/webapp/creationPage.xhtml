@@ -25,7 +25,7 @@
                     <div id="coordinatesSection">
 
                         <!-- Список доступных координат -->
-                        <div class="mt-3" style="display: #{productBean.useExistingCoordinates ? 'block' : 'none'};">
+
                             <label for="coordinatesList" class="form-label">Выберите координаты:</label>
                             <h:selectOneMenu id="coordinatesList" value="#{productBean.selectedCoordinates}"
                                              class="form-select">
@@ -34,10 +34,11 @@
                                                itemValue="#{coord}"
                                                itemLabel="#{coord.x}, #{coord.y}" />
                             </h:selectOneMenu>
-                            <p:commandButton value="Добавить координаты"
-                                             action="/createCoordinates.xhtml"
-                                             styleClass="btn btn-secondary mt-2" />
-                        </div>
+                        <p:button value="Добавить координаты"
+                                  outcome="/createCoordinates.xhtml"
+                                  styleClass="btn btn-secondary mt-2" />
+
+
                     </div>
                 </div>
             </div>
@@ -59,8 +60,8 @@
                                                itemValue="#{org}"
                                                itemLabel="#{org.name}" />
                             </h:selectOneMenu>
-                            <p:commandButton value="Добавить организацию"
-                                             action="/createOrganization.xhtml"
+                            <p:button value="Добавить организацию"
+                                             outcome="createOrganization.xhtml"
                                              styleClass="btn btn-secondary mt-2" />
                         </div>
                     </div>
@@ -109,8 +110,8 @@
                                                itemValue="#{person}"
                                                itemLabel="#{person.name} (#{person.passportID})" />
                             </h:selectOneMenu>
-                            <p:commandButton value="Добавить персонал"
-                                             action="/createPerson.xhtml"
+                            <p:button value="Добавить персонал"
+                                             outcome="createPerson.xhtml"
                                              styleClass="btn btn-secondary mt-2" />
                         </div>
                     </div>

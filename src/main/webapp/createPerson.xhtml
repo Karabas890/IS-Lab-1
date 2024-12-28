@@ -1,0 +1,92 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Создание нового объекта Person</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    </h:head>
+
+    <h:body class="container mt-5">
+        <h:form id="createPersonForm" styleClass="needs-validation">
+            <h1 class="mb-4 text-center">Создание нового объекта Person</h1>
+
+            <!-- Поле Name -->
+            <div class="mb-3">
+                <label for="name" class="form-label">Имя:</label>
+                <h:inputText id="name" value="#{personBean.person.name}" required="true"
+                             class="form-control" />
+                <h:message for="name" class="text-danger" />
+            </div>
+
+            <!-- Поле Eye Color -->
+            <div class="mb-3">
+                <label for="eyeColor" class="form-label">Цвет глаз:</label>
+                <h:selectOneMenu id="eyeColor" value="#{personBean.person.eyeColor}" class="form-select">
+                    <f:selectItem itemLabel="Выберите цвет" itemValue="" />
+                    <f:selectItems value="#{personBean.colorOptions}" />
+                </h:selectOneMenu>
+                <h:message for="eyeColor" class="text-danger" />
+            </div>
+
+            <!-- Поле Hair Color -->
+            <div class="mb-3">
+                <label for="hairColor" class="form-label">Цвет волос:</label>
+                <h:selectOneMenu id="hairColor" value="#{personBean.person.hairColor}" class="form-select">
+                    <f:selectItem itemLabel="Выберите цвет" itemValue="" />
+                    <f:selectItems value="#{personBean.colorOptions}" />
+                </h:selectOneMenu>
+                <h:message for="hairColor" class="text-danger" />
+            </div>
+
+            <!-- Поле Height -->
+            <div class="mb-3">
+                <label for="height" class="form-label">Рост:</label>
+                <h:inputText id="height" value="#{personBean.person.height}" required="true"
+                             class="form-control" />
+                <h:message for="height" class="text-danger" />
+            </div>
+
+            <!-- Поле Weight -->
+            <div class="mb-3">
+                <label for="weight" class="form-label">Вес:</label>
+                <h:inputText id="weight" value="#{personBean.person.weight}" class="form-control" />
+                <h:message for="weight" class="text-danger" />
+            </div>
+
+            <!-- Поле Passport ID -->
+            <div class="mb-3">
+                <label for="passportID" class="form-label">ID паспорта:</label>
+                <h:inputText id="passportID" value="#{personBean.person.passportID}" required="true"
+                             class="form-control" />
+                <h:message for="passportID" class="text-danger" />
+            </div>
+
+            <!-- Поле Location -->
+            <div class="mb-3">
+                <label for="location" class="form-label">Расположение:</label>
+                <h:selectOneMenu id="location" value="#{personBean.person.location}" required="true" class="form-select">
+                    <f:selectItems value="#{personBean.existingLocations}" var="loc"
+                                   itemValue="#{loc}" itemLabel="#{loc.name}" />
+                </h:selectOneMenu>
+                <h:message for="location" class="text-danger" />
+            </div>
+
+            <!-- Кнопки управления -->
+            <div class="d-flex justify-content-center">
+                <!-- Кнопка для сохранения -->
+                <p:commandButton value="Создать объект Person" action="#{personBean.savePerson}"
+                                 styleClass="btn btn-success btn-lg me-3" />
+
+                <!-- Кнопка для добавления новой локации -->
+                <h:button value="Добавить локацию" outcome="createLocation.xhtml"
+                          styleClass="btn btn-primary btn-lg me-3" />
+
+                <!-- Кнопка для возврата -->
+                <h:button value="Назад" outcome="creationPage.xhtml"
+                          styleClass="btn btn-secondary btn-lg" />
+            </div>
+        </h:form>
+    </h:body>
+</ui:composition>

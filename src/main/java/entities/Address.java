@@ -14,7 +14,7 @@ public class Address {
     private String zipCode;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "town_id")
+    @JoinColumn(name = "location_id")
     private Location town;
 
     // Геттеры и сеттеры

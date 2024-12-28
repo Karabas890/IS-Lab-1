@@ -1,4 +1,4 @@
-package Beans;
+package beans;
 
 import entities.*;
 import services.*;

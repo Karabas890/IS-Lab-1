@@ -16,7 +16,7 @@ public class Organization {
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "official_address_id")
+    @JoinColumn(name = "address_id")
     private Address officialAddress;
 
     @Column(name = "annual_turnover", nullable = false)

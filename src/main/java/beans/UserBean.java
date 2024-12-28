@@ -1,4 +1,4 @@
-package Beans;
+package beans;
 
 import dao.UserDAO;
 import entities.User;
@@ -8,7 +8,6 @@ import jakarta.inject.Named;
 import java.io.Serializable;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
-import org.primefaces.PrimeFaces;
 
 @Named
 @SessionScoped
@@ -133,7 +132,7 @@ public class UserBean implements Serializable {
 
         context.addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Регистрация успешна", "Регистрация успешна"));
-        return "login?faces-redirect=true";
+        return null;
     }
 
 

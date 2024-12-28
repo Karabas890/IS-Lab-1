@@ -4,10 +4,12 @@ import entities.Address;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+
+import java.io.Serializable;
 import java.util.List;
 
 @Stateless
-public class AddressService {
+public class AddressService implements Serializable {
 
     @PersistenceContext
     private EntityManager entityManager;

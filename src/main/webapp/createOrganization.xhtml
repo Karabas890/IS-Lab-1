@@ -1,0 +1,89 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Создание нового объекта Organization</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    </h:head>
+
+    <h:body class="container mt-5">
+        <h:form id="createOrganizationForm" styleClass="needs-validation">
+            <h1 class="mb-4 text-center">Создание нового объекта Organization</h1>
+
+            <!-- Поле Name -->
+            <div class="mb-3">
+                <label for="name" class="form-label">Название организации:</label>
+                <h:inputText id="name" value="#{organizationBean.organization.name}" required="true"
+                             class="form-control" />
+                <h:message for="name" class="text-danger" />
+            </div>
+
+            <!-- Поле Annual Turnover -->
+            <div class="mb-3">
+                <label for="annualTurnover" class="form-label">Годовой оборот:</label>
+                <h:inputText id="annualTurnover" value="#{organizationBean.organization.annualTurnover}" required="true"
+                             class="form-control" />
+                <h:message for="annualTurnover" class="text-danger" />
+            </div>
+
+            <!-- Поле Employees Count -->
+            <div class="mb-3">
+                <label for="employeesCount" class="form-label">Количество сотрудников:</label>
+                <h:inputText id="employeesCount" value="#{organizationBean.organization.employeesCount}" required="true"
+                             class="form-control" />
+                <h:message for="employeesCount" class="text-danger" />
+            </div>
+
+            <!-- Поле Full Name -->
+            <div class="mb-3">
+                <label for="fullName" class="form-label">Полное название:</label>
+                <h:inputText id="fullName" value="#{organizationBean.organization.fullName}" required="true"
+                             class="form-control" />
+                <h:message for="fullName" class="text-danger" />
+            </div>
+
+            <!-- Поле Rating -->
+            <div class="mb-3">
+                <label for="rating" class="form-label">Рейтинг:</label>
+                <h:inputText id="rating" value="#{organizationBean.organization.rating}" required="true"
+                             class="form-control" />
+                <h:message for="rating" class="text-danger" />
+            </div>
+
+            <!-- Поле Type -->
+            <div class="mb-3">
+                <label for="type" class="form-label">Тип организации:</label>
+                <h:selectOneMenu id="type" value="#{organizationBean.organization.type}" class="form-select">
+                    <f:selectItem itemLabel="Выберите тип" itemValue="" />
+                    <f:selectItems value="#{organizationBean.organizationTypes}" />
+                </h:selectOneMenu>
+                <h:message for="type" class="text-danger" />
+            </div>
+
+            <!-- Поле Address -->
+            <div class="mb-3">
+                <label for="address" class="form-label">Адрес:</label>
+                <h:selectOneMenu id="address" value="#{organizationBean.organization.officialAddress}" class="form-select">
+                    <f:selectItem itemLabel="Выберите адрес" itemValue="" />
+                    <f:selectItems value="#{organizationBean.existingAddresses}" var="address"
+                                   itemLabel="#{address.zipCode}" itemValue="#{address}" />
+                </h:selectOneMenu>
+                <h:message for="address" class="text-danger" />
+                <div class="mt-2">
+                    <h:button value="Добавить адрес" outcome="createAddress.xhtml" styleClass="btn btn-link" />
+                </div>
+            </div>
+
+            <!-- Кнопка создания -->
+            <div class="text-center">
+                <p:commandButton value="Создать организацию" action="#{organizationBean.saveOrganization}"
+                                 styleClass="btn btn-success btn-lg" />
+            </div>
+            <!-- Кнопка для возврата -->
+            <h:button value="Назад" outcome="creationPage.xhtml"
+                      styleClass="btn btn-secondary btn-lg ms-3" />
+        </h:form>
+    </h:body>
+</ui:composition>
