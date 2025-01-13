@@ -1,11 +1,14 @@
 package entities;
 import enums.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -14,6 +17,12 @@ public class User {
     private String username;
     @Column(name="password")
     private String password;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @Column(name="request_admin_rights", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean requestAdminRights;
 
     // Конструкторы
     public User() {}
@@ -46,5 +55,19 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+    public boolean getRequestAdminRights() {
+        return requestAdminRights;
+    }
+
+    public void setRequestAdminRights(Boolean requestAdminRights) {
+        this.requestAdminRights = requestAdminRights;
     }
 }

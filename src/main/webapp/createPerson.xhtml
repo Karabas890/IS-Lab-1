@@ -72,16 +72,17 @@
                 </h:selectOneMenu>
                 <h:message for="location" class="text-danger" />
             </div>
+            <!-- Кнопка для добавления новой локации -->
+            <h:button value="Добавить локацию" outcome="createLocation.xhtml"
+                      styleClass="btn btn-primary btn-lg me-3" />
 
             <!-- Кнопки управления -->
             <div class="d-flex justify-content-center">
                 <!-- Кнопка для сохранения -->
-                <p:commandButton value="Создать объект Person" action="#{personBean.savePerson}"
+                <h:commandButton value="Создать объект Person" action="#{personBean.savePerson}"
                                  styleClass="btn btn-success btn-lg me-3" />
 
-                <!-- Кнопка для добавления новой локации -->
-                <h:button value="Добавить локацию" outcome="createLocation.xhtml"
-                          styleClass="btn btn-primary btn-lg me-3" />
+
 
                 <!-- Кнопка для возврата -->
                 <h:button value="Назад" outcome="creationPage.xhtml"

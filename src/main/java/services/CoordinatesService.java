@@ -4,10 +4,12 @@ import entities.Coordinates;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+
+import java.io.Serializable;
 import java.util.List;
 
 @Stateless
-public class CoordinatesService {
+public class CoordinatesService implements Serializable {
 
     @PersistenceContext
     private EntityManager entityManager;

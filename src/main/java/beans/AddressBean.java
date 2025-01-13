@@ -48,6 +48,7 @@ public class AddressBean implements Serializable {
     public void loadLocations() {
         this.existingLocations = locationService.findAll();
     }
+    // Метод для получения адреса по ID
 
     // Геттеры и сеттеры
 

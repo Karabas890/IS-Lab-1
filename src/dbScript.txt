@@ -1,7 +1,9 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE, -- Уникальное имя пользователя
-    password VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL, -- Добавлено поле роли
+    request_admin_rights BOOLEAN DEFAULT FALSE -- Булево поле для запроса прав администратора
 );
 
 CREATE TABLE location (
@@ -62,7 +64,8 @@ CREATE TABLE product (
     owner_id INTEGER NOT NULL,
     FOREIGN KEY (coordinates_id) REFERENCES coordinates (id),
     FOREIGN KEY (manufacturer_id) REFERENCES organization (id),
-    FOREIGN KEY (owner_id) REFERENCES person (id)
+    FOREIGN KEY (owner_id) REFERENCES person (id),
+    FOREIGN KEY (user_id) REFERENCES users (id) -- Связь с таблицей пользователей
 );
 
 

@@ -1,14 +1,16 @@
 package entities;
 import enums.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Data
 @Table(name = "product")
-public class Product {
+public class Product implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -48,5 +50,9 @@ public class Product {
     @JoinColumn(name = "owner_id", nullable = false)
     private Person owner;
 
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     // Геттеры и сеттеры
 }

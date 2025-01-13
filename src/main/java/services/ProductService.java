@@ -9,7 +9,7 @@ import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
-public class ProductService {
+public class ProductService implements Serializable{
 
     @PersistenceContext
     private EntityManager entityManager;

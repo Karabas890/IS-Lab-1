@@ -65,20 +65,20 @@
             <!-- Поле Address -->
             <div class="mb-3">
                 <label for="address" class="form-label">Адрес:</label>
-                <h:selectOneMenu id="address" value="#{organizationBean.organization.officialAddress}" class="form-select">
-                    <f:selectItem itemLabel="Выберите адрес" itemValue="" />
+                <h:selectOneMenu id="address" value="#{organizationBean.selectedAddressId}" class="form-select">
                     <f:selectItems value="#{organizationBean.existingAddresses}" var="address"
-                                   itemLabel="#{address.zipCode}" itemValue="#{address}" />
+                                   itemLabel="#{address.id}" itemValue="#{address.id}" />
                 </h:selectOneMenu>
+
                 <h:message for="address" class="text-danger" />
                 <div class="mt-2">
-                    <h:button value="Добавить адрес" outcome="createAddress.xhtml" styleClass="btn btn-link" />
+                    <h:button value="Добавить адрес" outcome="createAddress.xhtml"   styleClass="btn btn-primary btn-lg me-3" />
                 </div>
             </div>
 
             <!-- Кнопка создания -->
             <div class="text-center">
-                <p:commandButton value="Создать организацию" action="#{organizationBean.saveOrganization}"
+                <h:commandButton value="Создать организацию" action="#{organizationBean.saveOrganization}"
                                  styleClass="btn btn-success btn-lg" />
             </div>
             <!-- Кнопка для возврата -->

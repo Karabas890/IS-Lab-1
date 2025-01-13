@@ -9,12 +9,13 @@ import jakarta.inject.Named;
 import services.PersonService;
 import services.LocationService;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
 @Named
 @RequestScoped
-public class PersonBean {
+public class PersonBean implements Serializable {
     private Person person = new Person();
 
     @Inject

@@ -24,19 +24,18 @@
             <div class="mb-3">
                 <label for="town" class="form-label">Город:</label>
                 <h:selectOneMenu id="town" value="#{addressBean.address.town}" class="form-select">
-                    <f:selectItem itemLabel="Выберите город" itemValue="" />
                     <f:selectItems value="#{addressBean.existingLocations}" var="loc"
                                    itemLabel="#{loc.name}" itemValue="#{loc}" />
                 </h:selectOneMenu>
                 <h:message for="town" class="text-danger" />
                 <div class="mt-2">
-                    <h:button value="Добавить город" outcome="createLocation.xhtml" styleClass="btn btn-link" />
+                    <h:button value="Добавить город" outcome="createLocation.xhtml"   styleClass="btn btn-primary btn-lg me-3" />
                 </div>
             </div>
 
             <!-- Кнопка создания -->
             <div class="text-center">
-                <p:commandButton value="Создать адрес" action="#{addressBean.saveAddress}"
+                <h:commandButton value="Создать адрес" action="#{addressBean.saveAddress}"
                                  styleClass="btn btn-success btn-lg" />
             </div>
             <!-- Кнопка для возврата -->

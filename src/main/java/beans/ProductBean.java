@@ -1,6 +1,9 @@
 package beans;
 
 import entities.*;
+import jakarta.annotation.PostConstruct;
+import jakarta.faces.view.ViewScoped;
+import jakarta.resource.spi.work.SecurityContext;
 import services.*;
 import enums.UnitOfMeasure;
 import enums.OrganizationType;
@@ -12,11 +15,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Named
-@RequestScoped
+@ViewScoped
 public class ProductBean implements Serializable {
 
     private List<Product> productList;
     private long productId;
+    //@Inject
+    //private SecurityContext securityContext; // Введение SecurityContext для получения текущего пользователя
 
     @Inject
     private ProductService productService;
@@ -29,8 +34,12 @@ public class ProductBean implements Serializable {
 
     @Inject
     private PersonService personService; // Добавляем сервис для Person
+    @Inject
+    private User currentUser; // Текущий пользователь, который создаёт продукт
 
     private Product product = new Product();
+    @Inject
+    private UserBean userBean;
 
     private boolean useExistingCoordinates;
     private boolean useExistingOrganization;
@@ -39,6 +48,22 @@ public class ProductBean implements Serializable {
     private Coordinates selectedCoordinates;
     private Organization selectedOrganization;
     private Person selectedPerson; // Выбранный существующий Person
+    private List<UnitOfMeasure> unitOfMeasureValues;
+    @PostConstruct
+    public void init() {
+        product = new Product();
+        unitOfMeasureValues = Arrays.asList(UnitOfMeasure.values()); // Assuming UnitOfMeasure is an Enum
+    }
+
+    // Other methods
+
+    public List<UnitOfMeasure> getUnitOfMeasureValues() {
+        return unitOfMeasureValues;
+    }
+
+    public void setUnitOfMeasureValues(List<UnitOfMeasure> unitOfMeasureValues) {
+        this.unitOfMeasureValues = unitOfMeasureValues;
+    }
     // Получение списка продуктов
     public List<Product> getProductList() {
         return productService.findAll();
@@ -67,7 +92,7 @@ public class ProductBean implements Serializable {
     }
     // Список существующих объектов Person
     public List<Person> getExistingPersons() {
-        return personService.findAll();
+        System.out.println("getExistingPersons"); return personService.findAll();
     }
 
     // Getters и Setters для Person
@@ -80,11 +105,11 @@ public class ProductBean implements Serializable {
     }
 
     public Person getSelectedPerson() {
-        return selectedPerson;
+        System.out.println("getSelectedPerson method called."); return selectedPerson;
     }
 
     public void setSelectedPerson(Person selectedPerson) {
-        this.selectedPerson = selectedPerson;
+        System.out.println("setSelectedPerson method called."); this.selectedPerson = selectedPerson;
     }
 
     // Методы управления объектами
@@ -94,18 +119,32 @@ public class ProductBean implements Serializable {
         }
     }
 
-    // Сохранение нового продукта
     public void createProduct() {
+        System.out.println("createProduct() method called.");
         if (useExistingCoordinates) {
             product.setCoordinates(selectedCoordinates);
+            System.out.println("Creating product with details1: " + product.getCoordinates());
         }
         if (useExistingOrganization) {
             product.setManufacturer(selectedOrganization);
+            System.out.println("Creating product with detail2s: "+ product.getManufacturer());
         }
         if (useExistingPerson) {
             product.setOwner(selectedPerson);
+            System.out.println("Creating product with details3: "+product.getOwner());
+        }
+        System.out.println("Creating product with details4: "+getProduct());
+        // Получение текущего пользователя через UserBean
+        User currentUser = userBean.getCurrentUser();
+        System.out.println("Creating product with details5: "+getProduct());
+        if (currentUser != null) {
+            product.setUser(currentUser);
         }
         productService.save(product);
+    }
+
+    public void sigma() {
+        System.out.println("sigma moment: ");
     }
 
     // Сброс полей формы

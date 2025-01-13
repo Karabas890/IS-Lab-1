@@ -2,13 +2,15 @@ package services;
 
 import entities.Address;
 import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 
-@Stateless
+@ApplicationScoped
 public class AddressService implements Serializable {
 
     @PersistenceContext
@@ -18,7 +20,7 @@ public class AddressService implements Serializable {
         return entityManager.createQuery("SELECT a FROM Address a", Address.class).getResultList();
     }
 
-    public Address findById(int id) {
+    public Address findById(Long id) {
         return entityManager.find(Address.class, id);
     }
 
@@ -30,7 +32,7 @@ public class AddressService implements Serializable {
         entityManager.merge(address);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         Address address = findById(id);
         if (address != null) {
             entityManager.remove(address);

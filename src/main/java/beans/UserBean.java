@@ -1,16 +1,21 @@
 package beans;
 
-import dao.UserDAO;
+import services.UserService;
 import entities.User;
+import enums.Role;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import lombok.Getter;
+import lombok.Setter;
 
 @Named
 @SessionScoped
+@Getter
+@Setter
 public class UserBean implements Serializable {
     private String username;
     private String password;
@@ -18,14 +23,22 @@ public class UserBean implements Serializable {
     private String newUsername;
     private String newPassword;
     private String confirmPassword;
+    private Role role;
 
     private boolean loggedIn;
 
     private String errorMessage; // Для сообщений об ошибках
     private String registrationErrorMessage; // Для ошибок регистрации
     @Inject
-    private UserDAO userDAO;
+    private UserService userService;
     // Геттеры и сеттеры для username
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
     public String getUsername() {
         return username;
     }
@@ -86,7 +99,8 @@ public class UserBean implements Serializable {
 
     // Метод для обработки логина
     public String login() {
-        User user = userDAO.findByUsernameAndPassword(username, password);
+        System.out.println("Login starts");
+        User user = userService.findByUsernameAndPassword(username, password);
         if (user == null) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Неверное имя пользователя или пароль", "Неверное имя пользователя или пароль"));
@@ -117,7 +131,7 @@ public class UserBean implements Serializable {
         }
 
         // Проверяем существование пользователя
-        User existingUser = userDAO.findByUsername(newUsername);
+        User existingUser = userService.findByUsername(newUsername);
         if (existingUser != null) {
             context.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Пользователь с таким именем уже существует.", "Пользователь с таким именем уже существует."));
@@ -128,7 +142,8 @@ public class UserBean implements Serializable {
         User newUser = new User();
         newUser.setUsername(newUsername);
         newUser.setPassword(newPassword); // Рекомендуется зашифровать пароль перед сохранением
-        userDAO.save(newUser);
+        newUser.setRole(Role.USER);
+        userService.save(newUser);
 
         context.addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Регистрация успешна", "Регистрация успешна"));
@@ -142,5 +157,11 @@ public class UserBean implements Serializable {
         username = null;
         password = null;
         return "index.xhtml?faces-redirect=true";
+    }
+    public User getCurrentUser() {
+        // Логика получения текущего пользователя из контекста
+        System.out.println("getCurrentUser moment: ");
+        String currentUserName = userService.getCurrentUserName(); // Метод или поле для получения имени пользователя
+        return userService.findByUsername(currentUserName);
     }
 }

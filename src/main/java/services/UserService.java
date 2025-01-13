@@ -1,6 +1,7 @@
-package dao;
+package services;
 
 import entities.User;
+import jakarta.faces.context.FacesContext;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -8,7 +9,7 @@ import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
-public class UserDAO implements Serializable {
+public class UserService implements Serializable {
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -35,4 +36,10 @@ public class UserDAO implements Serializable {
 
         return users.isEmpty() ? null : users.get(0);
     }
+    public String getCurrentUserName() {
+        // Логика получения имени текущего пользователя, например, через сессию или безопасность
+        // Возможно использование SecurityContext или другой системы аутентификации
+        return FacesContext.getCurrentInstance().getExternalContext().getRemoteUser();
+    }
+
 }

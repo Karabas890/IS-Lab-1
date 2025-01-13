@@ -20,25 +20,12 @@
                     <h2 class="h5">Шаг 1: Координаты (Coordinates)</h2>
                 </div>
                 <div class="card-body">
-
-                    <!-- Секция для выбора-->
                     <div id="coordinatesSection">
-
-                        <!-- Список доступных координат -->
-
-                            <label for="coordinatesList" class="form-label">Выберите координаты:</label>
-                            <h:selectOneMenu id="coordinatesList" value="#{productBean.selectedCoordinates}"
-                                             class="form-select">
-                                <f:selectItems value="#{productBean.existingCoordinates}"
-                                               var="coord"
-                                               itemValue="#{coord}"
-                                               itemLabel="#{coord.x}, #{coord.y}" />
-                            </h:selectOneMenu>
-                        <p:button value="Добавить координаты"
-                                  outcome="/createCoordinates.xhtml"
-                                  styleClass="btn btn-secondary mt-2" />
-
-
+                        <label for="coordinatesList" class="form-label">Выберите координаты:</label>
+                        <h:selectOneMenu id="coordinatesList" value="#{productBean.selectedCoordinates}" class="form-select">
+                            <f:selectItems value="#{productBean.existingCoordinates}" var="coord" itemValue="#{coord}" itemLabel="#{coord.x}, #{coord.y}" />
+                        </h:selectOneMenu>
+                        <p:button value="Добавить координаты" outcome="/createCoordinates.xhtml" styleClass="btn btn-secondary mt-2" />
                     </div>
                 </div>
             </div>
@@ -49,20 +36,13 @@
                     <h2 class="h5">Шаг 2: Организация (Organization)</h2>
                 </div>
                 <div class="card-body">
-
                     <div id="organizationSection">
                         <div class="mt-3">
                             <label for="organizationList" class="form-label">Выберите организацию:</label>
-                            <h:selectOneMenu id="organizationList" value="#{productBean.selectedOrganization}"
-                                             class="form-select">
-                                <f:selectItems value="#{productBean.existingOrganizations}"
-                                               var="org"
-                                               itemValue="#{org}"
-                                               itemLabel="#{org.name}" />
+                            <h:selectOneMenu id="organizationList" value="#{productBean.selectedOrganization}" class="form-select">
+                                <f:selectItems value="#{productBean.existingOrganizations}" var="org" itemValue="#{org}" itemLabel="#{org.name}" />
                             </h:selectOneMenu>
-                            <p:button value="Добавить организацию"
-                                             outcome="createOrganization.xhtml"
-                                             styleClass="btn btn-secondary mt-2" />
+                            <p:button value="Добавить организацию" outcome="createOrganization.xhtml" styleClass="btn btn-secondary mt-2" />
                         </div>
                     </div>
                 </div>
@@ -77,51 +57,73 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="productName" class="form-label">Название продукта:</label>
-                            <h:inputText id="productName" value="#{productBean.product.name}" required="true"
-                                         class="form-control" />
+                            <h:inputText id="productName" value="#{productBean.product.name}" required="true" class="form-control" />
                             <h:message for="productName" class="text-danger" />
                         </div>
                         <div class="col-md-6">
                             <label for="partNumber" class="form-label">Парт. номер:</label>
-                            <h:inputText id="partNumber" value="#{productBean.product.partNumber}" required="true"
-                                         class="form-control" />
+                            <h:inputText id="partNumber" value="#{productBean.product.partNumber}" required="true" class="form-control" />
                             <h:message for="partNumber" class="text-danger" />
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Шаг 4: Информация о Person -->
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="h5">Шаг 4: Информация о Person</h2>
-                </div>
-                <div class="card-body">
-
-                    <!-- Секция для выбора или создания нового Person -->
-                    <div id="personSection">
-                        <!-- Если выбран существующий Person -->
-                        <div class="mt-3">
-                            <label for="personList" class="form-label">Выберите существующего Person:</label>
-                            <h:selectOneMenu id="personList" value="#{productBean.selectedPerson}"
-                                             class="form-select">
-                                <f:selectItems value="#{productBean.existingPersons}"
-                                               var="person"
-                                               itemValue="#{person}"
-                                               itemLabel="#{person.name} (#{person.passportID})" />
-                            </h:selectOneMenu>
-                            <p:button value="Добавить персонал"
-                                             outcome="createPerson.xhtml"
-                                             styleClass="btn btn-secondary mt-2" />
+                        <div class="col-md-6">
+                            <label for="price" class="form-label">Цена:</label>
+                            <h:inputText id="price" value="#{productBean.product.price}" required="true" class="form-control" />
+                            <h:message for="price" class="text-danger" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="manufactureCost" class="form-label">Издержки производства:</label>
+                            <h:inputText id="manufactureCost" value="#{productBean.product.manufactureCost}" required="true" class="form-control" />
+                            <h:message for="manufactureCost" class="text-danger" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="rating" class="form-label">Рейтинг:</label>
+                            <h:inputText id="rating" value="#{productBean.product.rating}" required="true" class="form-control" />
+                            <h:message for="rating" class="text-danger" />
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Кнопка создания -->
+
+            <!-- Шаг 4: Единица измерения (UnitOfMeasure) -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5">Шаг 4: Единица измерения (UnitOfMeasure)</h2>
+                </div>
+                <div class="card-body">
+                    <div id="unitOfMeasureSection">
+                        <div class="mt-3">
+                            <label for="unitOfMeasureList" class="form-label">Выберите единицу измерения:</label>
+                            <h:selectOneMenu id="unitOfMeasureList" value="#{productBean.product.unitOfMeasure}" class="form-select">
+                                <f:selectItems value="#{productBean.unitOfMeasureValues}" var="unit" itemValue="#{unit}" itemLabel="#{unit}" />
+                            </h:selectOneMenu>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Шаг 5: Информация о Person -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5">Шаг 5: Информация о Person</h2>
+                </div>
+                <div class="card-body">
+                    <div id="personSection">
+                        <div class="mt-3">
+                            <label for="personList" class="form-label">Выберите существующего Person:</label>
+                            <h:selectOneMenu id="personList" value="#{productBean.selectedPerson}" class="form-select">
+                                <f:selectItems value="#{productBean.existingPersons}" var="person" itemValue="#{person}" itemLabel="#{person.name} (#{person.passportID})" />
+                            </h:selectOneMenu>
+                            <p:button value="Добавить персонал" outcome="createPerson.xhtml" styleClass="btn btn-secondary mt-2" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Кнопки -->
             <div class="text-center">
-                <p:commandButton value="Создать продукт" action="#{productBean.createProduct}"
-                                 styleClass="btn btn-success btn-lg" />
+            <!-- Кнопка создания -->
+            <h:commandButton value="Создать продукт" action="#{productController.figma}"
+                             styleClass="btn btn-success btn-lg" />
             </div>
         </h:form>
     </h:body>

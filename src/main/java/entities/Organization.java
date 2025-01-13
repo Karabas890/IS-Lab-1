@@ -4,10 +4,12 @@ import enums.OrganizationType;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Entity
 @Data
 @Table(name = "organization")
-public class Organization {
+public class Organization implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -15,7 +17,7 @@ public class Organization {
     @Column(name="name", nullable = false, unique = true)
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "address_id")
     private Address officialAddress;
 

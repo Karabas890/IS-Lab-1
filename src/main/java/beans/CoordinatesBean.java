@@ -5,9 +5,11 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import services.CoordinatesService;
 
+import java.io.Serializable;
+
 @Named
 @RequestScoped
-public class CoordinatesBean {
+public class CoordinatesBean implements Serializable {
     private Coordinates coordinate = new Coordinates();
 
     @Inject
@@ -24,6 +26,7 @@ public class CoordinatesBean {
     public String saveCoordinate() {
         try {
             // Сохранение координат через сервис
+            System.out.println("Начало создания координат");
             coordinatesService.save(coordinate);
             System.out.println("Координаты успешно сохранены: X = " + coordinate.getX() + ", Y = " + coordinate.getY());
             return "/createProduct.xhtml?faces-redirect=true"; // Возврат на страницу создания продукта
