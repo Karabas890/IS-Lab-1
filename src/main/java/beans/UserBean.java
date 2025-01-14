@@ -97,7 +97,6 @@ public class UserBean implements Serializable {
         this.registrationErrorMessage = registrationErrorMessage;
     }
 
-    // Метод для обработки логина
     public String login() {
         System.out.println("Login starts");
         User user = userService.findByUsernameAndPassword(username, password);
@@ -107,10 +106,15 @@ public class UserBean implements Serializable {
             return null;
         }
 
+        // Сохраняем имя пользователя в сессии
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("username", user.getUsername());
+        loggedIn = true;
+
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Вы успешно вошли в систему", "Вы успешно вошли в систему"));
         return "home?faces-redirect=true";
     }
+
 
 
     public String register() {
@@ -151,13 +155,17 @@ public class UserBean implements Serializable {
     }
 
 
-    // Метод для выхода
     public String logout() {
         loggedIn = false;
         username = null;
         password = null;
+
+        // Удаляем данные из сессии
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("username");
+
         return "index.xhtml?faces-redirect=true";
     }
+
     public User getCurrentUser() {
         // Логика получения текущего пользователя из контекста
         System.out.println("getCurrentUser moment: ");

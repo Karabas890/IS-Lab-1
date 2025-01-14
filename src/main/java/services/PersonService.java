@@ -18,7 +18,7 @@ public class PersonService implements Serializable {
         return entityManager.createQuery("SELECT p FROM Person p", Person.class).getResultList();
     }
 
-    public Person findById(int id) {
+    public Person findById(Long id) {
         return entityManager.find(Person.class, id);
     }
 
@@ -30,7 +30,7 @@ public class PersonService implements Serializable {
         entityManager.merge(person);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         Person person = findById(id);
         if (person != null) {
             entityManager.remove(person);

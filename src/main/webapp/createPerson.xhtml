@@ -12,11 +12,16 @@
         <h:form id="createPersonForm" styleClass="needs-validation">
             <h1 class="mb-4 text-center">Создание нового объекта Person</h1>
 
+            <!-- Поле для сообщений -->
+            <h:outputText id="messages" value="#{personBean.message}" styleClass="alert #{personBean.messageStyle}" />
+
             <!-- Поле Name -->
             <div class="mb-3">
                 <label for="name" class="form-label">Имя:</label>
                 <h:inputText id="name" value="#{personBean.person.name}" required="true"
-                             class="form-control" />
+                             class="form-control">
+                    <f:validator validatorId="personValidator" />
+                </h:inputText>
                 <h:message for="name" class="text-danger" />
             </div>
 
@@ -26,6 +31,7 @@
                 <h:selectOneMenu id="eyeColor" value="#{personBean.person.eyeColor}" class="form-select">
                     <f:selectItem itemLabel="Выберите цвет" itemValue="" />
                     <f:selectItems value="#{personBean.colorOptions}" />
+                    <f:validator validatorId="personValidator" />
                 </h:selectOneMenu>
                 <h:message for="eyeColor" class="text-danger" />
             </div>
@@ -36,6 +42,7 @@
                 <h:selectOneMenu id="hairColor" value="#{personBean.person.hairColor}" class="form-select">
                     <f:selectItem itemLabel="Выберите цвет" itemValue="" />
                     <f:selectItems value="#{personBean.colorOptions}" />
+                    <f:validator validatorId="personValidator" />
                 </h:selectOneMenu>
                 <h:message for="hairColor" class="text-danger" />
             </div>
@@ -44,14 +51,18 @@
             <div class="mb-3">
                 <label for="height" class="form-label">Рост:</label>
                 <h:inputText id="height" value="#{personBean.person.height}" required="true"
-                             class="form-control" />
+                             class="form-control">
+                    <f:validator validatorId="personValidator" />
+                </h:inputText>
                 <h:message for="height" class="text-danger" />
             </div>
 
             <!-- Поле Weight -->
             <div class="mb-3">
                 <label for="weight" class="form-label">Вес:</label>
-                <h:inputText id="weight" value="#{personBean.person.weight}" class="form-control" />
+                <h:inputText id="weight" value="#{personBean.person.weight}" class="form-control">
+                    <f:validator validatorId="personValidator" />
+                </h:inputText>
                 <h:message for="weight" class="text-danger" />
             </div>
 
@@ -59,16 +70,19 @@
             <div class="mb-3">
                 <label for="passportID" class="form-label">ID паспорта:</label>
                 <h:inputText id="passportID" value="#{personBean.person.passportID}" required="true"
-                             class="form-control" />
+                             class="form-control">
+                    <f:validator validatorId="personValidator" />
+                </h:inputText>
                 <h:message for="passportID" class="text-danger" />
             </div>
 
             <!-- Поле Location -->
             <div class="mb-3">
                 <label for="location" class="form-label">Расположение:</label>
-                <h:selectOneMenu id="location" value="#{personBean.person.location}" required="true" class="form-select">
+                <h:selectOneMenu id="location" value="#{personBean.selectedLocationId}" required="true" class="form-select">
                     <f:selectItems value="#{personBean.existingLocations}" var="loc"
-                                   itemValue="#{loc}" itemLabel="#{loc.name}" />
+                                   itemValue="#{loc.id}" itemLabel="#{loc.name}" />
+                    <f:validator validatorId="personValidator" />
                 </h:selectOneMenu>
                 <h:message for="location" class="text-danger" />
             </div>
@@ -80,12 +94,12 @@
             <div class="d-flex justify-content-center">
                 <!-- Кнопка для сохранения -->
                 <h:commandButton value="Создать объект Person" action="#{personBean.savePerson}"
-                                 styleClass="btn btn-success btn-lg me-3" />
-
-
+                                 styleClass="btn btn-success btn-lg me-3">
+                    <f:ajax execute="@form" render="@form" />
+                </h:commandButton>
 
                 <!-- Кнопка для возврата -->
-                <h:button value="Назад" outcome="creationPage.xhtml"
+                <h:button value="Назад" outcome="createProduct.xhtml"
                           styleClass="btn btn-secondary btn-lg" />
             </div>
         </h:form>

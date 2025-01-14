@@ -20,6 +20,9 @@ public class ProductBean implements Serializable {
 
     private List<Product> productList;
     private long productId;
+    private String message;
+    private String messageStyle;
+
     //@Inject
     //private SecurityContext securityContext; // Введение SecurityContext для получения текущего пользователя
 
@@ -45,9 +48,9 @@ public class ProductBean implements Serializable {
     private boolean useExistingOrganization;
     private boolean useExistingPerson; // Переключатель для использования существующего Person
 
-    private Coordinates selectedCoordinates;
-    private Organization selectedOrganization;
-    private Person selectedPerson; // Выбранный существующий Person
+    private Long selectedCoordinates=1L;
+    private int selectedOrganization=1;
+    private Long selectedPerson=1L; // Выбранный существующий Person
     private List<UnitOfMeasure> unitOfMeasureValues;
     @PostConstruct
     public void init() {
@@ -56,6 +59,19 @@ public class ProductBean implements Serializable {
     }
 
     // Other methods
+    public void setMessage(String message, String messageStyle) {
+        this.message = message;
+        this.messageStyle = messageStyle;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getMessageStyle() {
+        return messageStyle;
+    }
+
 
     public List<UnitOfMeasure> getUnitOfMeasureValues() {
         return unitOfMeasureValues;
@@ -104,44 +120,40 @@ public class ProductBean implements Serializable {
         this.useExistingPerson = useExistingPerson;
     }
 
-    public Person getSelectedPerson() {
+    public Long getSelectedPerson() {
         System.out.println("getSelectedPerson method called."); return selectedPerson;
     }
 
-    public void setSelectedPerson(Person selectedPerson) {
+    public void setSelectedPerson(Long selectedPerson) {
         System.out.println("setSelectedPerson method called."); this.selectedPerson = selectedPerson;
     }
 
-    // Методы управления объектами
-    public void assignPersonToProduct() {
-        if (useExistingPerson) {
-            product.setOwner(selectedPerson); // Устанавливаем выбранного Person
+
+
+    public void saveProduct() {
+        try {
+
+            product.setCoordinates(coordinatesService.findById(selectedCoordinates));
+            product.setManufacturer(organizationService.findById(selectedOrganization));
+            product.setOwner(personService.findById(selectedPerson));
+
+
+            // Присваиваем текущего пользователя
+            User currentUser = userBean.getCurrentUser();
+            if (currentUser != null) {
+                product.setUser(currentUser);
+            }
+
+            // Сохраняем продукт
+            productService.save(product);
+
+            // Устанавливаем сообщение об успехе
+            setMessage("Продукт успешно создан!", "alert-success");
+        } catch (Exception e) {
+            setMessage("Ошибка при создании продукта: " + e.getMessage(), "alert-danger");
         }
     }
 
-    public void createProduct() {
-        System.out.println("createProduct() method called.");
-        if (useExistingCoordinates) {
-            product.setCoordinates(selectedCoordinates);
-            System.out.println("Creating product with details1: " + product.getCoordinates());
-        }
-        if (useExistingOrganization) {
-            product.setManufacturer(selectedOrganization);
-            System.out.println("Creating product with detail2s: "+ product.getManufacturer());
-        }
-        if (useExistingPerson) {
-            product.setOwner(selectedPerson);
-            System.out.println("Creating product with details3: "+product.getOwner());
-        }
-        System.out.println("Creating product with details4: "+getProduct());
-        // Получение текущего пользователя через UserBean
-        User currentUser = userBean.getCurrentUser();
-        System.out.println("Creating product with details5: "+getProduct());
-        if (currentUser != null) {
-            product.setUser(currentUser);
-        }
-        productService.save(product);
-    }
 
     public void sigma() {
         System.out.println("sigma moment: ");
@@ -154,7 +166,7 @@ public class ProductBean implements Serializable {
         useExistingOrganization = false;
         useExistingPerson = false;
         selectedCoordinates = null;
-        selectedOrganization = null;
+        selectedOrganization = Integer.parseInt(null);
         selectedPerson = null;
     }
 
@@ -192,19 +204,19 @@ public class ProductBean implements Serializable {
         this.useExistingOrganization = useExistingOrganization;
     }
 
-    public Coordinates getSelectedCoordinates() {
+    public Long getSelectedCoordinates() {
         return selectedCoordinates;
     }
 
-    public void setSelectedCoordinates(Coordinates selectedCoordinates) {
+    public void setSelectedCoordinates(Long selectedCoordinates) {
         this.selectedCoordinates = selectedCoordinates;
     }
 
-    public Organization getSelectedOrganization() {
+    public int getSelectedOrganization() {
         return selectedOrganization;
     }
 
-    public void setSelectedOrganization(Organization selectedOrganization) {
+    public void setSelectedOrganization(int selectedOrganization) {
         this.selectedOrganization = selectedOrganization;
     }
 

@@ -12,11 +12,14 @@
         <h:form id="createOrganizationForm" styleClass="needs-validation">
             <h1 class="mb-4 text-center">Создание нового объекта Organization</h1>
 
+            <!-- Поле для сообщений -->
+            <h:outputText id="messages" value="#{organizationBean.message}" styleClass="alert #{organizationBean.messageStyle}" />
+
             <!-- Поле Name -->
             <div class="mb-3">
                 <label for="name" class="form-label">Название организации:</label>
                 <h:inputText id="name" value="#{organizationBean.organization.name}" required="true"
-                             class="form-control" />
+                             class="form-control" validator="organizationValidator" />
                 <h:message for="name" class="text-danger" />
             </div>
 
@@ -24,7 +27,7 @@
             <div class="mb-3">
                 <label for="annualTurnover" class="form-label">Годовой оборот:</label>
                 <h:inputText id="annualTurnover" value="#{organizationBean.organization.annualTurnover}" required="true"
-                             class="form-control" />
+                             class="form-control" validator="organizationValidator" />
                 <h:message for="annualTurnover" class="text-danger" />
             </div>
 
@@ -32,7 +35,7 @@
             <div class="mb-3">
                 <label for="employeesCount" class="form-label">Количество сотрудников:</label>
                 <h:inputText id="employeesCount" value="#{organizationBean.organization.employeesCount}" required="true"
-                             class="form-control" />
+                             class="form-control" validator="organizationValidator" />
                 <h:message for="employeesCount" class="text-danger" />
             </div>
 
@@ -40,7 +43,7 @@
             <div class="mb-3">
                 <label for="fullName" class="form-label">Полное название:</label>
                 <h:inputText id="fullName" value="#{organizationBean.organization.fullName}" required="true"
-                             class="form-control" />
+                             class="form-control" validator="organizationValidator" />
                 <h:message for="fullName" class="text-danger" />
             </div>
 
@@ -48,7 +51,7 @@
             <div class="mb-3">
                 <label for="rating" class="form-label">Рейтинг:</label>
                 <h:inputText id="rating" value="#{organizationBean.organization.rating}" required="true"
-                             class="form-control" />
+                             class="form-control" validator="organizationValidator" />
                 <h:message for="rating" class="text-danger" />
             </div>
 
@@ -67,23 +70,25 @@
                 <label for="address" class="form-label">Адрес:</label>
                 <h:selectOneMenu id="address" value="#{organizationBean.selectedAddressId}" class="form-select">
                     <f:selectItems value="#{organizationBean.existingAddresses}" var="address"
-                                   itemLabel="#{address.id}" itemValue="#{address.id}" />
+                                   itemLabel="#{address}" itemValue="#{address.id}" />
                 </h:selectOneMenu>
-
                 <h:message for="address" class="text-danger" />
                 <div class="mt-2">
-                    <h:button value="Добавить адрес" outcome="createAddress.xhtml"   styleClass="btn btn-primary btn-lg me-3" />
+                    <h:button value="Добавить адрес" outcome="createAddress.xhtml" styleClass="btn btn-primary btn-lg me-3" />
                 </div>
             </div>
 
             <!-- Кнопка создания -->
             <div class="text-center">
                 <h:commandButton value="Создать организацию" action="#{organizationBean.saveOrganization}"
-                                 styleClass="btn btn-success btn-lg" />
-            </div>
+                                 styleClass="btn btn-success btn-lg">
+                    <f:ajax execute="@form" render="@form" />
+                </h:commandButton>
+
             <!-- Кнопка для возврата -->
-            <h:button value="Назад" outcome="creationPage.xhtml"
+            <h:button value="Назад" outcome="createProduct.xhtml"
                       styleClass="btn btn-secondary btn-lg ms-3" />
+            </div>
         </h:form>
     </h:body>
 </ui:composition>

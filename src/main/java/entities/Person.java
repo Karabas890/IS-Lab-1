@@ -24,7 +24,7 @@ public class Person implements Serializable {
     @Column(name="hair_color")
     private Color hairColor;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
 

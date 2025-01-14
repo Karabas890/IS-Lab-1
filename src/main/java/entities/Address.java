@@ -15,7 +15,7 @@ public class Address implements Serializable {
     @Column(name="zip_code", nullable = false)
     private String zipCode;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "location_id")
     private Location town;
 

@@ -18,7 +18,7 @@ public class LocationService implements Serializable {
         return entityManager.createQuery("SELECT l FROM Location l", Location.class).getResultList();
     }
 
-    public Location findById(int id) {
+    public Location findById(Long id) {
         return entityManager.find(Location.class, id);
     }
 
@@ -30,7 +30,7 @@ public class LocationService implements Serializable {
         entityManager.merge(location);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         Location location = findById(id);
         if (location != null) {
             entityManager.remove(location);

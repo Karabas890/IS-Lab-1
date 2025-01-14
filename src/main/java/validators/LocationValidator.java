@@ -1,33 +1,62 @@
 package validators;
 
-import controller.ProductController;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.validator.FacesValidator;
 import jakarta.faces.validator.Validator;
 import jakarta.faces.validator.ValidatorException;
-import jakarta.inject.Inject;
 
-@FacesValidator(value = "locationValidator", managed = true) // Регистрация валидатора
+@FacesValidator(value = "locationValidator", managed = true)
 public class LocationValidator implements Validator {
-
-    @Inject
-    private ProductController productController;
 
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-        Integer locationX = (Integer) component.getAttributes().get("locationX");
-        Integer locationY = (Integer) component.getAttributes().get("locationY");
-        String locationName = (String) component.getAttributes().get("locationName");
+        // Получаем имя компонента, чтобы понять, какое поле мы валидируем
+        String clientId = component.getClientId(context);
 
-        // Проверяем, что все необходимые поля заполнены
-        if (locationX == null || locationY == null || locationName == null || locationName.trim().isEmpty()) {
-            throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Validation Error",
-                    "Please enter both X and Y coordinates, and a valid name for the location."
-            ));
+        // Проверка для координаты X
+        if (clientId.contains(":x")) {
+            if (value == null || !(value instanceof Integer)) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Координата X должна быть целым числом."
+                ));
+            }
+        }
+
+        // Проверка для координаты Y
+        if (clientId.contains(":y")) {
+            if (value == null || !(value instanceof Integer)) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Координата Y должна быть целым числом."
+                ));
+            }
+        }
+
+        // Проверка для координаты Z
+        if (clientId.contains(":z")) {
+            if (value == null || !(value instanceof Float)) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Координата Z должна быть числом с плавающей точкой."
+                ));
+            }
+        }
+
+        // Проверка для имени
+        if (clientId.contains(":name")) {
+            if (value == null || value.toString().trim().isEmpty()) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Название локации не может быть пустым."
+                ));
+            }
         }
     }
 }

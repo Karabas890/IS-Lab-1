@@ -36,6 +36,7 @@ public class ProductService implements Serializable{
         entityManager.merge(product);
     }
     //Сохранение продукта
+    @Transactional
     public void save(Product product) {
         entityManager.persist(product);
     }

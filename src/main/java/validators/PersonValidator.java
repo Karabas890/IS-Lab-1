@@ -1,82 +1,149 @@
 package validators;
 
+import entities.Person;
+import enums.Color;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.validator.FacesValidator;
 import jakarta.faces.validator.Validator;
 import jakarta.faces.validator.ValidatorException;
-import entities.Person;
 
 @FacesValidator(value = "personValidator", managed = true) // Регистрация валидатора
 public class PersonValidator implements Validator {
 
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-        // Проверяем, является ли объект экземпляром Person
-        if (!(value instanceof Person)) {
-            throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка валидации",
-                    "Переданный объект не является допустимым экземпляром класса Person."
-            ));
+        String clientId = component.getClientId(context);
+
+        // Проверка для поля name (имя)
+        if (clientId.contains(":name")) {
+            if (value == null || value.toString().trim().isEmpty()) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Поле 'Имя' не может быть пустым."
+                ));
+            }
         }
 
-        Person person = (Person) value;
+        // Проверка для поля eyeColor (Цвет глаз)
+        if (clientId.contains(":eyeColor")) {
+            if (value == null) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Поле 'Цвет глаз' должно быть выбрано."
+                ));
+            }
 
-        // Проверяем поле name
-        if (person.getName() == null || person.getName().trim().isEmpty()) {
-            throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка валидации",
-                    "Поле 'Имя' не может быть пустым."
-            ));
+            // Проверка, что выбрано допустимое значение из перечисления
+            try {
+                Color eyeColor = (Color) value;
+                if (eyeColor == null) {
+                    throw new ValidatorException(new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Ошибка валидации",
+                            "Неверный цвет глаз."
+                    ));
+                }
+            } catch (Exception e) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Неверное значение для цвета глаз."
+                ));
+            }
         }
 
-        // Проверяем поле location
-        if (person.getLocation() == null) {
-            throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка валидации",
-                    "Поле 'Локация' не может быть пустым."
-            ));
+        // Проверка для поля hairColor (Цвет волос)
+        if (clientId.contains(":hairColor")) {
+            if (value == null) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Поле 'Цвет волос' должно быть выбрано."
+                ));
+            }
+
+            // Проверка, что выбрано допустимое значение из перечисления
+            try {
+                Color hairColor = (Color) value;
+                if (hairColor == null) {
+                    throw new ValidatorException(new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Ошибка валидации",
+                            "Неверный цвет волос."
+                    ));
+                }
+            } catch (Exception e) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Неверное значение для цвета волос."
+                ));
+            }
         }
 
-        // Проверяем поле height
-        if (person.getHeight() <= 0) {
-            throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка валидации",
-                    "Поле 'Рост' должно быть больше 0."
-            ));
+        // Проверка для поля height (рост)
+        if (clientId.contains(":height")) {
+            if (value == null || ((Float) value <= 0)) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Поле 'Рост' должно быть положительным числом."
+                ));
+            }
         }
 
-        // Проверяем поле weight (если указано)
-        if (person.getWeight() != null && person.getWeight() <= 0) {
-            throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка валидации",
-                    "Поле 'Вес' должно быть больше 0."
-            ));
+        // Проверка для поля weight (вес)
+        if (clientId.contains(":weight")) {
+            if (value != null && ((Float) value <= 0)) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Поле 'Вес' должно быть положительным числом."
+                ));
+            }
         }
 
-        // Проверяем поле passportID
-        String passportID = person.getPassportID();
-        if (passportID == null || passportID.trim().isEmpty()) {
-            throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка валидации",
-                    "Поле 'Паспортный ID' не может быть пустым."
-            ));
-        }
-        if (passportID.length() < 6 || passportID.length() > 33) {
-            throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка валидации",
-                    "Поле 'Паспортный ID' должно содержать от 6 до 33 символов."
-            ));
+        // Проверка для поля passportID (ID паспорта)
+        if (clientId.contains(":passportID")) {
+            if (value == null || value.toString().trim().isEmpty()) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Поле 'ID паспорта' не может быть пустым."
+                ));
+            }
+
+            String passportID = value.toString().trim();
+            // Проверка на формат ID паспорта (например, длина 33 символа)
+            if (passportID.length() > 33) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "ID паспорта не должен содержать более 33 символов."
+                ));
+            }
+            if (passportID.length() < 6) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "ID паспорта должен содержать не менее 6 символов."
+                ));
+            }
         }
 
-        // Уникальность passportID должна проверяться в другом месте (например, в базе данных)
+        // Проверка для поля location (местоположение)
+        if (clientId.contains(":location")) {
+            if (value == null) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Поле 'Расположение' должно быть выбрано."
+                ));
+            }
+        }
     }
 }

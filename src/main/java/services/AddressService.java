@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.LongSummaryStatistics;
 
-@ApplicationScoped
+@Stateless
 public class AddressService implements Serializable {
 
     @PersistenceContext

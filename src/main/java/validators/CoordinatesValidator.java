@@ -13,33 +13,55 @@ public class CoordinatesValidator implements Validator {
 
     @Override
     public void validate(FacesContext context, UIComponent component, Object value) throws ValidatorException {
-        // Проверяем, является ли объект экземпляром Coordinates
-        if (!(value instanceof Coordinates)) {
+        System.out.println("Coordinates: " + value);
+
+        // Проверка, является ли значение числом (для обоих координат x и y)
+        if (value == null) {
             throw new ValidatorException(new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     "Ошибка валидации",
-                    "Переданный объект не является допустимым экземпляром класса Coordinates."
+                    "Значение не может быть пустым."
             ));
         }
 
-        Coordinates coordinates = (Coordinates) value;
+        // Проверка для координаты X (должна быть double)
+        if (component.getId().equals("xCoord")) {
+            if (!(value instanceof Double)) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Координата X должна быть числом с плавающей запятой (double)."
+                ));
+            }
 
-        // Проверяем поле x
-        if (coordinates.getX() > 648) {
-            throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка валидации",
-                    "Поле 'X' не может быть больше 648."
-            ));
+            Double coordinateX = (Double) value;
+            if (coordinateX > 648) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Поле 'X' не может быть больше 648."
+                ));
+            }
         }
 
-        // Проверяем поле y
-        if (coordinates.getY() < 0) { // Условие на значение 'y' уточните, если есть ограничения
-            throw new ValidatorException(new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка валидации",
-                    "Поле 'Y' не может быть отрицательным."
-            ));
+        // Проверка для координаты Y (должна быть long)
+        if (component.getId().equals("yCoord")) {
+            if (!(value instanceof Long)) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Координата Y должна быть целым числом (long)."
+                ));
+            }
+
+            Long coordinateY = (Long) value;
+            if (coordinateY < 0) {
+                throw new ValidatorException(new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Ошибка валидации",
+                        "Поле 'Y' не может быть отрицательным."
+                ));
+            }
         }
     }
 }

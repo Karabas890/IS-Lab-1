@@ -15,6 +15,9 @@ import java.util.List;
 public class AddressBean implements Serializable {
     private Address address = new Address(); // Новый адрес для создания
     private List<Location> existingLocations; // Список доступных локаций
+    private Long selectedLocationId = 1L; // ID выбранной локации
+    private String message; // Сообщение для пользователя
+    private boolean success; // Флаг успеха операции
 
     @Inject
     private AddressService addressService;
@@ -26,32 +29,27 @@ public class AddressBean implements Serializable {
         // Конструктор по умолчанию
     }
 
-    /**
-     * Метод для сохранения нового адреса.
-     *
-     * @return Переход на страницу списка адресов или другую целевую страницу
-     */
     public String saveAddress() {
         try {
-            addressService.save(address);
-            address = new Address(); // Сброс формы
-            return "createOrganization.xhtml?faces-redirect=true";
+            addressService.save(address); // Сохраняем адрес
+            this.message = "Адрес успешно сохранен!";
+            this.success = true;
+            System.out.println("Address Saved: " + address.getId());
         } catch (Exception e) {
+            this.message = "Ошибка при сохранении адреса: " + e.getMessage();
+            this.success = false;
             e.printStackTrace();
-            return null; // Оставаться на той же странице в случае ошибки
         }
+        return null; // Оставаться на текущей странице
     }
 
-    /**
-     * Метод для загрузки существующих локаций.
-     */
     public void loadLocations() {
         this.existingLocations = locationService.findAll();
     }
-    // Метод для получения адреса по ID
+
+
 
     // Геттеры и сеттеры
-
     public Address getAddress() {
         return address;
     }
@@ -70,5 +68,30 @@ public class AddressBean implements Serializable {
     public void setExistingLocations(List<Location> existingLocations) {
         this.existingLocations = existingLocations;
     }
-}
 
+    public Long getSelectedLocationId() {
+        return selectedLocationId;
+    }
+
+    public void setSelectedLocationId(Long selectedLocationId) {
+        this.selectedLocationId = selectedLocationId;
+        this.address.setTown(locationService.findById(selectedLocationId));
+
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+}

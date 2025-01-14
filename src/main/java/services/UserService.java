@@ -5,7 +5,6 @@ import jakarta.faces.context.FacesContext;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -36,10 +35,20 @@ public class UserService implements Serializable {
 
         return users.isEmpty() ? null : users.get(0);
     }
-    public String getCurrentUserName() {
-        // Логика получения имени текущего пользователя, например, через сессию или безопасность
-        // Возможно использование SecurityContext или другой системы аутентификации
-        return FacesContext.getCurrentInstance().getExternalContext().getRemoteUser();
-    }
 
+    public String getCurrentUserName() {// Логика получения имени текущего пользователя, например, через сессию или безопасность
+// Возможно использование SecurityContext или другой системы аутентификации
+//return FacesContext.getCurrentInstance().getExternalContext().getRemoteUser();
+        System.out.println("getCurrentUser moment in Service: ");
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null) {
+            System.out.println("facesContext not null: ");
+            String currentUserName = (String) facesContext.getExternalContext().getSessionMap().get("username");
+            System.out.println("found currentUserName: ");
+            return currentUserName;
+        }
+        System.out.println("facesContext is null: ");
+        return null;
+    }
 }
+

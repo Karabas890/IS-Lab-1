@@ -1,8 +1,9 @@
+// PersonBean.java
 package beans;
 
 import entities.Person;
-import enums.Color;
 import entities.Location;
+import enums.Color;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -17,6 +18,9 @@ import java.util.List;
 @RequestScoped
 public class PersonBean implements Serializable {
     private Person person = new Person();
+    private Long selectedLocationId;
+    private String message;
+    private String messageStyle;
 
     @Inject
     private PersonService personService;
@@ -24,6 +28,26 @@ public class PersonBean implements Serializable {
     @Inject
     private LocationService locationService;
 
+    private List<Location> existingLocations;
+
+    public void loadLocations() {
+        this.existingLocations = locationService.findAll();
+    }
+
+    public String savePerson() {
+        try {
+            person.setLocation(locationService.findById(selectedLocationId));
+            personService.save(person);
+            this.message = "Объект Person успешно сохранён!";
+            this.messageStyle = "text-success";
+        } catch (Exception e) {
+            this.message = "Ошибка при сохранении объекта Person: " + e.getMessage();
+            this.messageStyle = "text-danger";
+        }
+        return null;
+    }
+
+    // Геттеры и сеттеры
     public Person getPerson() {
         return person;
     }
@@ -37,18 +61,29 @@ public class PersonBean implements Serializable {
     }
 
     public List<Location> getExistingLocations() {
-        return locationService.findAll();
+        if (existingLocations == null) {
+            loadLocations();
+        }
+        return existingLocations;
     }
 
-    public String savePerson() {
-        try {
-            personService.save(person);
-            System.out.println("Объект Person успешно сохранён: " + person.getName());
-            return "/createProduct.xhtml?faces-redirect=true"; // Возврат на страницу создания продукта
-        } catch (Exception e) {
-            System.err.println("Ошибка при сохранении объекта Person: " + e.getMessage());
-            return null; // Остаёмся на текущей странице при ошибке
-        }
+    public void setExistingLocations(List<Location> existingLocations) {
+        this.existingLocations = existingLocations;
+    }
+
+    public Long getSelectedLocationId() {
+        return selectedLocationId;
+    }
+
+    public void setSelectedLocationId(Long selectedLocationId) {
+        this.selectedLocationId = selectedLocationId;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getMessageStyle() {
+        return messageStyle;
     }
 }
-

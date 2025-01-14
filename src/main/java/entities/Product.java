@@ -18,7 +18,7 @@ public class Product implements Serializable {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "coordinates_id", nullable = false)
     private Coordinates coordinates;
 
@@ -46,7 +46,7 @@ public class Product implements Serializable {
     @Column(name = "part_number",length = 67)
     private String partNumber;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private Person owner;
 
@@ -55,4 +55,8 @@ public class Product implements Serializable {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     // Геттеры и сеттеры
+    // Конструктор без параметров
+    public Product() {
+        this.creationDate = new Date(); // Устанавливается текущая дата и время
+    }
 }

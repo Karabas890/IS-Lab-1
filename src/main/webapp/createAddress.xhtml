@@ -12,26 +12,35 @@
         <h:form id="createAddressForm" styleClass="needs-validation">
             <h1 class="mb-4 text-center">Создание нового адреса</h1>
 
+            <!-- Поле для отображения сообщения -->
+            <h:outputText value="#{addressBean.message}"
+                          styleClass="alert #{addressBean.success ? 'text-success' : 'text-danger'} d-block text-center mb-4"
+                          rendered="#{not empty addressBean.message}" />
+
             <!-- Поле Zip Code -->
             <div class="mb-3">
                 <label for="zipCode" class="form-label">Почтовый индекс:</label>
                 <h:inputText id="zipCode" value="#{addressBean.address.zipCode}" required="true"
-                             class="form-control" />
+                             class="form-control">
+                    <f:validator validatorId="addressValidator" />
+                </h:inputText>
                 <h:message for="zipCode" class="text-danger" />
             </div>
 
-            <!-- Поле Town -->
+            <!-- Поле Town (Локация) -->
             <div class="mb-3">
                 <label for="town" class="form-label">Город:</label>
-                <h:selectOneMenu id="town" value="#{addressBean.address.town}" class="form-select">
+                <h:selectOneMenu id="town" value="#{addressBean.selectedLocationId}" class="form-select">
                     <f:selectItems value="#{addressBean.existingLocations}" var="loc"
-                                   itemLabel="#{loc.name}" itemValue="#{loc}" />
+                                   itemLabel="#{loc}" itemValue="#{loc.id}" />
+                    <f:validator validatorId="addressValidator" />
                 </h:selectOneMenu>
                 <h:message for="town" class="text-danger" />
                 <div class="mt-2">
-                    <h:button value="Добавить город" outcome="createLocation.xhtml"   styleClass="btn btn-primary btn-lg me-3" />
+                    <h:button value="Добавить город" outcome="createLocation.xhtml" styleClass="btn btn-primary btn-lg me-3" />
                 </div>
             </div>
+
 
             <!-- Кнопка создания -->
             <div class="text-center">

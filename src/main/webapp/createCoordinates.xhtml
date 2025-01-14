@@ -14,6 +14,11 @@
             <!-- Заголовок -->
             <h1 class="mb-4 text-center">Создание нового объекта Coordinates</h1>
 
+            <!-- Поле для сообщения -->
+            <div class="mb-4">
+                <h:outputText value="#{coordinatesBean.message}" styleClass="alert #{coordinatesBean.messageStyle}" rendered="#{not empty coordinatesBean.message}" />
+            </div>
+
             <!-- Поля для ввода координат -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
@@ -25,7 +30,8 @@
                             <label for="xCoord" class="form-label">Координата X:</label>
                             <h:inputText id="xCoord" value="#{coordinatesBean.coordinate.x}"
                                          required="true" class="form-control">
-                                <f:validateDoubleRange maximum="648" />
+                                <!-- Применяем только кастомный валидатор -->
+                                <f:validator validatorId="coordinatesValidator" />
                             </h:inputText>
                             <h:message for="xCoord" class="text-danger" />
                         </div>
@@ -33,7 +39,8 @@
                             <label for="yCoord" class="form-label">Координата Y:</label>
                             <h:inputText id="yCoord" value="#{coordinatesBean.coordinate.y}"
                                          required="true" class="form-control">
-                                <f:validateLongRange />
+                                <!-- Применяем только кастомный валидатор -->
+                                <f:validator validatorId="coordinatesValidator" />
                             </h:inputText>
                             <h:message for="yCoord" class="text-danger" />
                         </div>
@@ -48,7 +55,7 @@
                                  styleClass="btn btn-success btn-lg" />
 
                 <!-- Кнопка для возврата -->
-                <h:button value="Назад" outcome="creationPage.xhtml"
+                <h:button value="Назад" outcome="createProduct.xhtml"
                           styleClass="btn btn-secondary btn-lg ms-3" />
             </div>
         </h:form>

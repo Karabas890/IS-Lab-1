@@ -2,6 +2,7 @@ package beans;
 
 import entities.Location;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -13,11 +14,13 @@ import java.io.Serializable;
 import java.util.List;
 
 @Named
-@ViewScoped
+@RequestScoped
 public class LocationBean implements Serializable {
 
     private Location location;
     private List<Location> existingLocations;
+    private String message;        // Сообщение для отображения
+    private String messageStyle;   // CSS-класс для сообщения
 
     @Inject
     private LocationService locationService;
@@ -28,16 +31,28 @@ public class LocationBean implements Serializable {
         loadExistingLocations();   // Загрузка существующих локаций
     }
 
-    public void saveLocation() {
+    public String saveLocation() {
         try {
+            System.out.println("Начало создания локации");
             locationService.save(location); // Сохранение объекта через LocationService
+            System.out.println("Локация успешно сохранена");
+            message = "Локация успешно создана.";  // Сообщение об успехе
+            messageStyle = "alert-success";  // Стиль для успешного сообщения
+
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Успех", "Локация успешно создана."));
-            resetForm(); // Сброс формы
-            loadExistingLocations(); // Обновление списка существующих локаций
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Успех", message));
+
+            //resetForm(); // Сброс формы
+            //loadExistingLocations(); // Обновление списка существующих локаций
+            return null; // Остаёмся на текущей странице для отображения сообщения
         } catch (Exception e) {
+            System.err.println("Ошибка при сохранении локации: ");
+            message = "Не удалось создать локацию: " + e.getMessage();  // Сообщение об ошибке
+            messageStyle = "alert-danger";  // Стиль для сообщения об ошибке
+
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка", "Не удалось создать локацию: " + e.getMessage()));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка", message));
+            return null; // Остаёмся на текущей странице для отображения ошибки
         }
     }
 
@@ -64,5 +79,13 @@ public class LocationBean implements Serializable {
 
     public void setExistingLocations(List<Location> existingLocations) {
         this.existingLocations = existingLocations;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getMessageStyle() {
+        return messageStyle;
     }
 }

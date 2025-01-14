@@ -18,7 +18,7 @@ public class CoordinatesService implements Serializable {
         return entityManager.createQuery("SELECT c FROM Coordinates c", Coordinates.class).getResultList();
     }
 
-    public Coordinates findById(int id) {
+    public Coordinates findById(Long id) {
         return entityManager.find(Coordinates.class, id);
     }
 
@@ -30,7 +30,7 @@ public class CoordinatesService implements Serializable {
         entityManager.merge(coordinates);
     }
 
-    public void delete(int id) {
+    public void delete(Long id) {
         Coordinates coordinates = findById(id);
         if (coordinates != null) {
             entityManager.remove(coordinates);
