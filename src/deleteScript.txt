@@ -1,0 +1,14 @@
+-- Отключаем проверку внешних ключей
+ALTER TABLE product DROP CONSTRAINT IF EXISTS product_owner_id_fkey;
+ALTER TABLE product DROP CONSTRAINT IF EXISTS product_user_id_fkey;
+ALTER TABLE product DROP CONSTRAINT IF EXISTS product_manufacturer_id_fkey;
+ALTER TABLE person DROP CONSTRAINT IF EXISTS person_location_id_fkey;
+
+-- Удаляем таблицы в правильном порядке (учитывая зависимости)
+DROP TABLE IF EXISTS product CASCADE;
+DROP TABLE IF EXISTS coordinates CASCADE;
+DROP TABLE IF EXISTS organization CASCADE;
+DROP TABLE IF EXISTS person CASCADE;
+DROP TABLE IF EXISTS address CASCADE;
+DROP TABLE IF EXISTS location CASCADE;
+DROP TABLE IF EXISTS users CASCADE;

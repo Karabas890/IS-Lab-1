@@ -20,7 +20,7 @@
             <!-- Поле X -->
             <div class="mb-3">
                 <label for="x" class="form-label">Координата X:</label>
-                <h:inputText id="x" value="#{locationBean.location.x}" required="true" class="form-control">
+                <h:inputText id="x" value="#{locationBean.location.x}" converterMessage="X должен быть Int" class="form-control">
                     <f:validator validatorId="locationValidator" />
                     <f:attribute name="locationX" value="#{locationBean.location.x}" />
                 </h:inputText>
@@ -30,7 +30,7 @@
             <!-- Поле Y -->
             <div class="mb-3">
                 <label for="y" class="form-label">Координата Y:</label>
-                <h:inputText id="y" value="#{locationBean.location.y}" required="true" class="form-control">
+                <h:inputText id="y" value="#{locationBean.location.y}" converterMessage="Y должен быть Int" class="form-control">
                     <f:validator validatorId="locationValidator" />
                     <f:attribute name="locationY" value="#{locationBean.location.y}" />
                 </h:inputText>
@@ -40,7 +40,7 @@
             <!-- Поле Z -->
             <div class="mb-3">
                 <label for="z" class="form-label">Координата Z:</label>
-                <h:inputText id="z" value="#{locationBean.location.z}" class="form-control">
+                <h:inputText id="z" value="#{locationBean.location.z}" class="form-control" converterMessage="Z должен быть float">
                     <f:validator validatorId="locationValidator" />
                     <f:attribute name="locationZ" value="#{locationBean.location.z}" />
                 </h:inputText>
@@ -50,7 +50,7 @@
             <!-- Поле Name -->
             <div class="mb-3">
                 <label for="name" class="form-label">Название:</label>
-                <h:inputText id="name" value="#{locationBean.location.name}" required="true" class="form-control">
+                <h:inputText id="name" value="#{locationBean.location.name}" class="form-control" converterMessage="name должен быть String">
                     <f:validator validatorId="locationValidator" />
                     <f:attribute name="locationName" value="#{locationBean.location.name}" />
                 </h:inputText>

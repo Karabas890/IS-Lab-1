@@ -32,6 +32,12 @@ public class CoordinatesBean implements Serializable {
     public String getMessageStyle() {
         return messageStyle;
     }
+    public Double getX() {
+        return this.coordinate.getX();
+    }
+    public void setX(Double x) {
+         this.coordinate.setX(x);
+    }
 
     public String saveCoordinate() {
         try {

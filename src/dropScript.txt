@@ -1,0 +1,20 @@
+-- Отключаем временно проверку внешних ключей
+ALTER TABLE product DROP CONSTRAINT IF EXISTS product_owner_id_fkey;
+ALTER TABLE product DROP CONSTRAINT IF EXISTS product_user_id_fkey;
+ALTER TABLE product DROP CONSTRAINT IF EXISTS product_manufacturer_id_fkey;
+ALTER TABLE person DROP CONSTRAINT IF EXISTS person_location_id_fkey;
+
+-- Удаляем все записи из таблиц
+TRUNCATE TABLE product RESTART IDENTITY CASCADE;
+TRUNCATE TABLE coordinates RESTART IDENTITY CASCADE;
+TRUNCATE TABLE organization RESTART IDENTITY CASCADE;
+TRUNCATE TABLE person RESTART IDENTITY CASCADE;
+TRUNCATE TABLE address RESTART IDENTITY CASCADE;
+TRUNCATE TABLE location RESTART IDENTITY CASCADE;
+TRUNCATE TABLE users RESTART IDENTITY CASCADE;
+
+-- Восстанавливаем ограничения
+ALTER TABLE product ADD CONSTRAINT product_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES person (id);
+ALTER TABLE product ADD CONSTRAINT product_user_id_fkey FOREIGN KEY (user_id) REFERENCES users (id);
+ALTER TABLE product ADD CONSTRAINT product_manufacturer_id_fkey FOREIGN KEY (manufacturer_id) REFERENCES organization (id);
+ALTER TABLE person ADD CONSTRAINT person_location_id_fkey FOREIGN KEY (location_id) REFERENCES location (id);

@@ -13,12 +13,14 @@
          <h1 class="mb-4 text-center">Создание нового продукта</h1>
 
          <!-- Поле для сообщений -->
-         <h:outputText id="messages" value="#{productBean.message}" styleClass="alert #{productBean.messageStyle}" />
+         <div class="mb-4">
+            <h:outputText id="messages" value="#{productBean.message}" styleClass="alert #{productBean.messageStyle}" />
+         </div>
 
          <!-- Поле Name -->
          <div class="mb-3">
             <label for="name" class="form-label">Название продукта:</label>
-            <h:inputText id="name" value="#{productBean.product.name}" required="true" class="form-control">
+            <h:inputText id="name" value="#{productBean.product.name}" class="form-control" converterMessage="Название должно быть строкой">
                <f:validator validatorId="productValidator" />
             </h:inputText>
             <h:message for="name" class="text-danger" />
@@ -27,9 +29,10 @@
          <!-- Поле Coordinates -->
          <div class="mb-3">
             <label for="coordinates" class="form-label">Координаты:</label>
-            <h:selectOneMenu id="coordinates" value="#{productBean.selectedCoordinates}" required="true" class="form-select">
+            <h:selectOneMenu id="coordinates" value="#{productBean.selectedCoordinates}" class="form-select" >
                <f:selectItems value="#{productBean.existingCoordinates}" var="coord"
                               itemValue="#{coord.id}" itemLabel="#{coord.id}" />
+               <f:validator validatorId="productValidator" />
             </h:selectOneMenu>
             <h:message for="coordinates" class="text-danger" />
          </div>
@@ -42,8 +45,9 @@
          <!-- Поле Unit Of Measure -->
          <div class="mb-3">
             <label for="unitOfMeasure" class="form-label">Единица измерения:</label>
-            <h:selectOneMenu id="unitOfMeasure" value="#{productBean.product.unitOfMeasure}" required="true" class="form-select">
+            <h:selectOneMenu id="unitOfMeasure" value="#{productBean.product.unitOfMeasure}" class="form-select">
                <f:selectItems value="#{productBean.unitOfMeasureValues}" />
+               <f:validator validatorId="productValidator" />
             </h:selectOneMenu>
             <h:message for="unitOfMeasure" class="text-danger" />
          </div>
@@ -51,8 +55,9 @@
          <!-- Поле Manufacturer -->
          <div class="mb-3">
             <label for="manufacturer" class="form-label">Производитель:</label>
-            <h:selectOneMenu id="manufacturer" value="#{productBean.selectedOrganization}" required="true" class="form-select">
+            <h:selectOneMenu id="manufacturer" value="#{productBean.selectedOrganization}"  class="form-select">
                <f:selectItems value="#{productBean.existingOrganizations}" var="org" itemValue="#{org.id}" itemLabel="#{org.name}" />
+               <f:validator validatorId="productValidator" />
             </h:selectOneMenu>
             <h:message for="manufacturer" class="text-danger" />
          </div>
@@ -65,8 +70,8 @@
          <!-- Поле Price -->
          <div class="mb-3">
             <label for="price" class="form-label">Цена:</label>
-            <h:inputText id="price" value="#{productBean.product.price}" required="true" class="form-control">
-               <f:validateLongRange minimum="0" />
+            <h:inputText id="price" value="#{productBean.product.price}"  class="form-control" converterMessage="Цена должна быть целым числом">
+               <f:validator validatorId="productValidator" />
             </h:inputText>
             <h:message for="price" class="text-danger" />
          </div>
@@ -74,8 +79,8 @@
          <!-- Поле Manufacture Cost -->
          <div class="mb-3">
             <label for="manufactureCost" class="form-label">Себестоимость:</label>
-            <h:inputText id="manufactureCost" value="#{productBean.product.manufactureCost}" required="true" class="form-control">
-               <f:validateLongRange minimum="0" />
+            <h:inputText id="manufactureCost" value="#{productBean.product.manufactureCost}"  class="form-control" converterMessage="Себестоимость должна быть целым числом">
+               <f:validator validatorId="productValidator" />
             </h:inputText>
             <h:message for="manufactureCost" class="text-danger" />
          </div>
@@ -83,8 +88,8 @@
          <!-- Поле Rating -->
          <div class="mb-3">
             <label for="rating" class="form-label">Рейтинг:</label>
-            <h:inputText id="rating" value="#{productBean.product.rating}" required="true" class="form-control">
-               <f:validateDoubleRange minimum="0.0" maximum="5.0" />
+            <h:inputText id="rating" value="#{productBean.product.rating}" class="form-control" converterMessage="Рейтинг должен быть числом с плавающей точкой">
+               <f:validator validatorId="productValidator" />
             </h:inputText>
             <h:message for="rating" class="text-danger" />
          </div>
@@ -92,15 +97,18 @@
          <!-- Поле Part Number -->
          <div class="mb-3">
             <label for="partNumber" class="form-label">Серийный номер:</label>
-            <h:inputText id="partNumber" value="#{productBean.product.partNumber}" maxlength="67" class="form-control" />
+            <h:inputText id="partNumber" value="#{productBean.product.partNumber}" class="form-control"  converterMessage="Серийный номер должен быть строкой">
+               <f:validator validatorId="productValidator" />
+            </h:inputText>
             <h:message for="partNumber" class="text-danger" />
          </div>
 
          <!-- Поле Owner -->
          <div class="mb-3">
             <label for="owner" class="form-label">Владелец:</label>
-            <h:selectOneMenu id="owner" value="#{productBean.selectedPerson}" required="true" class="form-select">
+            <h:selectOneMenu id="owner" value="#{productBean.selectedPerson}" class="form-select">
                <f:selectItems value="#{productBean.existingPersons}" var="person" itemValue="#{person.id}" itemLabel="#{person.name}" />
+               <f:validator validatorId="productValidator" />
             </h:selectOneMenu>
             <h:message for="owner" class="text-danger" />
          </div>
@@ -109,7 +117,6 @@
             <h:button value="Добавить нового владельца" outcome="createPerson.xhtml"
                       styleClass="btn btn-primary btn-lg me-3" />
          </div>
-
 
          <!-- Кнопки управления -->
          <div class="d-flex justify-content-center">

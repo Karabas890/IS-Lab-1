@@ -13,12 +13,13 @@
             <h1 class="mb-4 text-center">Создание нового объекта Organization</h1>
 
             <!-- Поле для сообщений -->
+            <div class="mb-4">
             <h:outputText id="messages" value="#{organizationBean.message}" styleClass="alert #{organizationBean.messageStyle}" />
-
+            </div>
             <!-- Поле Name -->
             <div class="mb-3">
                 <label for="name" class="form-label">Название организации:</label>
-                <h:inputText id="name" value="#{organizationBean.organization.name}" required="true"
+                <h:inputText id="name" value="#{organizationBean.organization.name}"
                              class="form-control" validator="organizationValidator" />
                 <h:message for="name" class="text-danger" />
             </div>
@@ -26,7 +27,7 @@
             <!-- Поле Annual Turnover -->
             <div class="mb-3">
                 <label for="annualTurnover" class="form-label">Годовой оборот:</label>
-                <h:inputText id="annualTurnover" value="#{organizationBean.organization.annualTurnover}" required="true"
+                <h:inputText id="annualTurnover" value="#{organizationBean.organization.annualTurnover}" converterMessage="annualTurnover должен быть Float"
                              class="form-control" validator="organizationValidator" />
                 <h:message for="annualTurnover" class="text-danger" />
             </div>
@@ -34,7 +35,7 @@
             <!-- Поле Employees Count -->
             <div class="mb-3">
                 <label for="employeesCount" class="form-label">Количество сотрудников:</label>
-                <h:inputText id="employeesCount" value="#{organizationBean.organization.employeesCount}" required="true"
+                <h:inputText id="employeesCount" value="#{organizationBean.organization.employeesCount}"  converterMessage="employeesCount должен быть Int"
                              class="form-control" validator="organizationValidator" />
                 <h:message for="employeesCount" class="text-danger" />
             </div>
@@ -42,7 +43,7 @@
             <!-- Поле Full Name -->
             <div class="mb-3">
                 <label for="fullName" class="form-label">Полное название:</label>
-                <h:inputText id="fullName" value="#{organizationBean.organization.fullName}" required="true"
+                <h:inputText id="fullName" value="#{organizationBean.organization.fullName}" converterMessage="fullName должен быть String"
                              class="form-control" validator="organizationValidator" />
                 <h:message for="fullName" class="text-danger" />
             </div>
@@ -50,7 +51,7 @@
             <!-- Поле Rating -->
             <div class="mb-3">
                 <label for="rating" class="form-label">Рейтинг:</label>
-                <h:inputText id="rating" value="#{organizationBean.organization.rating}" required="true"
+                <h:inputText id="rating" value="#{organizationBean.organization.rating}" converterMessage="Rating должен быть double"
                              class="form-control" validator="organizationValidator" />
                 <h:message for="rating" class="text-danger" />
             </div>
@@ -69,7 +70,7 @@
             <div class="mb-3">
                 <label for="address" class="form-label">Адрес:</label>
                 <h:selectOneMenu id="address" value="#{organizationBean.selectedAddressId}" class="form-select">
-                    <f:selectItems value="#{organizationBean.existingAddresses}" var="address"
+                    <f:selectItems value="#{personBean.existingLocations}" var="address"
                                    itemLabel="#{address}" itemValue="#{address.id}" />
                 </h:selectOneMenu>
                 <h:message for="address" class="text-danger" />

@@ -34,7 +34,7 @@ CREATE TABLE person (
 
 CREATE TABLE organization (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
     address_id INTEGER,
     annual_turnover FLOAT NOT NULL,
     employees_count INTEGER NOT NULL,

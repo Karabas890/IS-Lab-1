@@ -41,7 +41,7 @@ public class PersonBean implements Serializable {
             this.message = "Объект Person успешно сохранён!";
             this.messageStyle = "text-success";
         } catch (Exception e) {
-            this.message = "Ошибка при сохранении объекта Person: " + e.getMessage();
+            this.message = "Ошибка при сохранении объекта Person: ";
             this.messageStyle = "text-danger";
         }
         return null;

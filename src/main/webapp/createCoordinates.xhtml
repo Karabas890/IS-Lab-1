@@ -29,7 +29,7 @@
                         <div class="col-md-6">
                             <label for="xCoord" class="form-label">Координата X:</label>
                             <h:inputText id="xCoord" value="#{coordinatesBean.coordinate.x}"
-                                         required="true" class="form-control">
+                                         class="form-control" converterMessage="X должен быть double">
                                 <!-- Применяем только кастомный валидатор -->
                                 <f:validator validatorId="coordinatesValidator" />
                             </h:inputText>
@@ -38,7 +38,7 @@
                         <div class="col-md-6">
                             <label for="yCoord" class="form-label">Координата Y:</label>
                             <h:inputText id="yCoord" value="#{coordinatesBean.coordinate.y}"
-                                         required="true" class="form-control">
+                                          class="form-control" converterMessage="Y должен быть Int">
                                 <!-- Применяем только кастомный валидатор -->
                                 <f:validator validatorId="coordinatesValidator" />
                             </h:inputText>

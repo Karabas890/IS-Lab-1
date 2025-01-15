@@ -33,8 +33,7 @@ public class ProductValidator implements Validator {
 
         // Check coordinates field
         if (clientId.contains(":coordinates")) {
-            Coordinates coordinates = (Coordinates) value;
-            if (coordinates == null) {
+            if (value == null) {
                 throw new ValidatorException(new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
                         "Ошибка валидации",
@@ -84,8 +83,7 @@ public class ProductValidator implements Validator {
 
         // Check manufacturer field
         if (clientId.contains(":manufacturer")) {
-            Organization manufacturer = (Organization) value;
-            if (manufacturer == null) {
+            if (value == null) {
                 throw new ValidatorException(new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
                         "Ошибка валидации",
@@ -140,8 +138,7 @@ public class ProductValidator implements Validator {
 
         // Check owner field
         if (clientId.contains(":owner")) {
-            Person owner = (Person) value;
-            if (owner == null) {
+            if (value == null) {
                 throw new ValidatorException(new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
                         "Ошибка валидации",

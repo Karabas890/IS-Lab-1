@@ -13,15 +13,17 @@
             <h1 class="mb-4 text-center">Создание нового адреса</h1>
 
             <!-- Поле для отображения сообщения -->
+            <div class="mb-4">
             <h:outputText value="#{addressBean.message}"
                           styleClass="alert #{addressBean.success ? 'text-success' : 'text-danger'} d-block text-center mb-4"
                           rendered="#{not empty addressBean.message}" />
+            </div>
 
             <!-- Поле Zip Code -->
             <div class="mb-3">
                 <label for="zipCode" class="form-label">Почтовый индекс:</label>
-                <h:inputText id="zipCode" value="#{addressBean.address.zipCode}" required="true"
-                             class="form-control">
+                <h:inputText id="zipCode" value="#{addressBean.address.zipCode}"
+                             class="form-control" converterMessage="Zip Code должен быть String">
                     <f:validator validatorId="addressValidator" />
                 </h:inputText>
                 <h:message for="zipCode" class="text-danger" />

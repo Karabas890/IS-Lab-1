@@ -36,4 +36,5 @@ public class OrganizationService implements Serializable {
             entityManager.remove(organization);
         }
     }
+
 }

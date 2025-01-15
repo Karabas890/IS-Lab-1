@@ -13,12 +13,13 @@
             <h1 class="mb-4 text-center">Создание нового объекта Person</h1>
 
             <!-- Поле для сообщений -->
+            <div class="mb-4">
             <h:outputText id="messages" value="#{personBean.message}" styleClass="alert #{personBean.messageStyle}" />
-
+            </div>
             <!-- Поле Name -->
             <div class="mb-3">
                 <label for="name" class="form-label">Имя:</label>
-                <h:inputText id="name" value="#{personBean.person.name}" required="true"
+                <h:inputText id="name" value="#{personBean.person.name}"
                              class="form-control">
                     <f:validator validatorId="personValidator" />
                 </h:inputText>
@@ -50,7 +51,7 @@
             <!-- Поле Height -->
             <div class="mb-3">
                 <label for="height" class="form-label">Рост:</label>
-                <h:inputText id="height" value="#{personBean.person.height}" required="true"
+                <h:inputText id="height" value="#{personBean.person.height}" converterMessage="Height должен быть float"
                              class="form-control">
                     <f:validator validatorId="personValidator" />
                 </h:inputText>
@@ -60,7 +61,7 @@
             <!-- Поле Weight -->
             <div class="mb-3">
                 <label for="weight" class="form-label">Вес:</label>
-                <h:inputText id="weight" value="#{personBean.person.weight}" class="form-control">
+                <h:inputText id="weight" value="#{personBean.person.weight}" class="form-control" converterMessage="Weight должен быть float">
                     <f:validator validatorId="personValidator" />
                 </h:inputText>
                 <h:message for="weight" class="text-danger" />
@@ -69,8 +70,8 @@
             <!-- Поле Passport ID -->
             <div class="mb-3">
                 <label for="passportID" class="form-label">ID паспорта:</label>
-                <h:inputText id="passportID" value="#{personBean.person.passportID}" required="true"
-                             class="form-control">
+                <h:inputText id="passportID" value="#{personBean.person.passportID}" converterMessage="passportID должен быть String" class="form-control">
+
                     <f:validator validatorId="personValidator" />
                 </h:inputText>
                 <h:message for="passportID" class="text-danger" />
