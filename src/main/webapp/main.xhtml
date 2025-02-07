@@ -1,0 +1,158 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
+
+    <h:head>
+        <title>Управление объектами</title>
+        <!-- Подключение Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+        <style>
+            /* Дополнительные стили для улучшения внешнего вида */
+            .table-container {
+                margin: 20px auto;
+                max-width: 95%;
+            }
+
+            .tab-content {
+                padding: 20px;
+                border: 1px solid #dee2e6;
+                border-radius: 5px;
+                background-color: #f9f9f9;
+            }
+
+            .btn-action {
+                margin-right: 5px;
+            }
+
+            .dialog-header {
+                font-weight: bold;
+                color: #dc3545;
+            }
+        </style>
+    </h:head>
+
+    <h:body>
+
+            <h1 class="text-center mt-4 mb-4">Управление объектами</h1>
+
+
+        <h:form id="filterForm">
+            <h:inputText id="nameFilter" value="#{productBean.nameFilter}" a:placeholder="Name filter"
+                         style="width: 5%; margin-left: 5%; ">
+                <f:ajax event="keyup" execute="@this" render="dataTableId"/>
+            </h:inputText>
+        </h:form>
+
+        <h:form>
+            <h:inputText id="partNumberFilter" value="#{productBean.partNumberFilter}" a:placeholder="Part Number filter"
+                         style="width: 5%; margin-left: 80%">
+                <f:ajax event="keyup" execute="@this" render="dataTableId"/>
+            </h:inputText>
+        </h:form>
+
+        <div class="table shadow-sm">
+            <!-- Data Table -->
+            <h:form>
+                <p:dataTable id="dataTableId" value="#{productBean.productList}" var="product" lazy="true" paginator="true"  rows="10"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}" editable="true" styleClass="table table-striped table-bordered"
+                             style="table-layout: auto" paginatorPosition="bottom">
+
+                <!-- Колонки с атрибутами сущности Product -->
+                <p:column style="width: 2%">
+                    <f:facet name="header">
+                        Id
+                        <h:commandButton value="#{productBean.sortOrderId ? '↓' : '↑'}"
+                                         action="#{productBean.sortById}">
+                            <f:ajax execute="@form" render="dataTableId"/>
+                        </h:commandButton>
+                    </f:facet>
+                    #{product.id}
+                </p:column>
+
+                <p:column style="width: 4%">
+                    <f:facet name="header">
+                        Name
+                        <h:commandButton value="#{productBean.sortOrderName ? '↓' : '↑'}"
+                                         action="#{productBean.sortByName}">
+                            <f:ajax execute="@form" render="dataTableId"/>
+                        </h:commandButton>
+                    </f:facet>
+                    #{product.name}
+                </p:column>
+
+                <p:column style="width: 6%" headerText="Coordinates">
+                    X: #{product.coordinates.x}, Y: #{product.coordinates.y}
+                </p:column>
+
+                <p:column style="width: 8%">
+                    <f:facet name="header">
+                        Creation Date
+                        <h:commandButton value="#{productBean.sortOrderDate ? '↓' : '↑'}"
+                                         action="#{productBean.sortByDate}">
+                            <f:ajax execute="@form" render="dataTableId"/>
+                        </h:commandButton>
+                    </f:facet>
+                    #{product.creationDate}
+                </p:column>
+
+                <p:column style="width: 8%" headerText="Unit of Measure">
+                    #{product.unitOfMeasure}
+                </p:column>
+
+                <p:column style="width: 7%" headerText="Manufacturer ID">
+                    <h:outputText value="#{product.manufacturer.id}" />
+                </p:column>
+
+                <p:column style="width: 4%">
+                    <f:facet name="header">
+                        Price
+                        <h:commandButton value="#{productBean.sortOrderPrice ? '↓' : '↑'}"
+                                         action="#{productBean.sortByPrice}">
+                            <f:ajax execute="@form" render="dataTableId"/>
+                        </h:commandButton>
+                    </f:facet>
+                    #{product.price}
+                </p:column>
+
+                <p:column style="width: 10%">
+                    <f:facet name="header">
+                        Manufacture Cost
+                        <h:commandButton value="#{productBean.sortOrderManufactureCost ? '↓' : '↑'}"
+                                         action="#{productBean.sortByManufactureCost}">
+                            <f:ajax execute="@form" render="dataTableId"/>
+                        </h:commandButton>
+                    </f:facet>
+                    #{product.manufactureCost}
+                </p:column>
+
+                <p:column style="width: 5%">
+                    <f:facet name="header">
+                        Rating
+                        <h:commandButton value="#{productBean.sortOrderRating ? '↓' : '↑'}"
+                                         action="#{productBean.sortByRating}">
+                            <f:ajax execute="@form" render="dataTableId"/>
+                        </h:commandButton>
+                    </f:facet>
+                    #{product.rating}
+                </p:column>
+
+                <p:column style="width: 6%" headerText="Part Number">
+                    #{product.partNumber}
+                </p:column>
+
+                <p:column style="width: 3%" headerText="OwnerId">
+                    <h:outputText value="#{product.owner.id}" />
+                </p:column>
+                <p:column style="width: 4%" headerText="CreatedBy">
+                    #{product.user.username}
+                </p:column>
+                </p:dataTable>
+            </h:form>
+        </div>
+
+
+
+    </h:body>
+</ui:composition>

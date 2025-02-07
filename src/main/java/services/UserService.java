@@ -14,9 +14,12 @@ public class UserService implements Serializable {
 
     @Transactional
     public void save(User user) {
-        entityManager.persist(user);
+        if (user.getId() == null) { // Если ID отсутствует, создаем новую запись
+            entityManager.persist(user);
+        } else { // Если ID есть, обновляем существующую
+            entityManager.merge(user);
+        }
     }
-
     public User findByUsernameAndPassword(String username, String password) {
         List<User> users = entityManager.createQuery(
                         "SELECT u FROM User u WHERE u.username = :username AND u.password = :password", User.class)
@@ -50,5 +53,21 @@ public class UserService implements Serializable {
         System.out.println("facesContext is null: ");
         return null;
     }
+    // Метод для обновления существующего пользователя
+    @Transactional
+    public void update(User user) {
+        // Проверяем, существует ли пользователь в базе данных
+        if (user != null && user.getId() != null) {
+            entityManager.merge(user); // Сохраняем изменения пользователя
+        } else {
+            throw new IllegalArgumentException("User or user ID cannot be null");
+        }
+    }
+    public List<User> findUsersWithPendingAdminRights() {
+        System.out.println("findUsersWithPendingAdminRights in Service: ");
+        return entityManager.createQuery("SELECT u FROM User u WHERE u.requestAdminRights = true", User.class)
+                .getResultList();
+    }
+
 }
 

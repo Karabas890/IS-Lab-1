@@ -1,26 +1,39 @@
 <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:a="http://xmlns.jcp.org/jsf/passthrough">
 
     <h:head>
         <title>Управление объектами</title>
         <!-- Подключение Bootstrap -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
         <style>
-            /* Дополнительные стили для улучшения внешнего вида */
+            /* Стили для адаптивного дизайна */
+            .container {
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
             .table-container {
-                margin: 20px auto;
-                max-width: 95%;
+                overflow-x: auto; /* Для горизонтальной прокрутки таблицы */
+                width: 100%;
             }
 
-            .tab-content {
-                padding: 20px;
-                border: 1px solid #dee2e6;
-                border-radius: 5px;
-                background-color: #f9f9f9;
+            .tab-content, .tabView-wrapper {
+                width: 100%;
+                display: block;
+                overflow-x: auto; /* Обеспечивает прокрутку для длинного содержимого */
             }
 
+            .table-striped.table-bordered {
+                width: 100%;
+                table-layout: auto;
+            }
+
+            /* Дополнительные стили */
             .btn-action {
                 margin-right: 5px;
             }
@@ -29,80 +42,158 @@
                 font-weight: bold;
                 color: #dc3545;
             }
+
         </style>
     </h:head>
 
     <h:body>
         <div class="container">
+            <!-- Включение информации о текущем пользователе -->
+            <ui:include src="userInfo.xhtml" styleClass="fixed-user-info"/>
+
             <h1 class="text-center mt-4 mb-4">Управление объектами</h1>
             <h:form id="mainForm">
 
-                <p:tabView id="tabView" styleClass="tab-content">
+                <p:tabView id="tabView" style="width: 100%;" styleClass="tabView-wrapper">
+
                     <!-- Таблица с объектами -->
                     <p:tab id="tabObjects" title="Объекты">
                         <div class="table-container">
+
                             <h:dataTable id="objectTable"
                                          value="#{productBean.productList}"
                                          var="product"
+                                         lazy="true"
                                          styleClass="table table-striped table-bordered"
                                          paginator="true"
                                          rows="10"
-                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
-
+                                         editable="true"
+                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                         style="width: 100%; table-layout: auto;" paginatorPosition="bottom">
                                 <!-- Колонки таблицы -->
                                 <p:column headerText="ID">
-                                    <h:outputText value="#{product.id}" />
+                                    <f:facet name="header">
+                                        Id
+                                        <h:commandButton value="#{productBean.sortOrderId ? '↓' : '↑'}"
+                                                         action="#{productBean.sortById}">
+                                            <f:ajax execute="@form" render="objectTable"/>
+                                        </h:commandButton>
+                                    </f:facet>
+                                    #{product.id}
                                 </p:column>
                                 <p:column headerText="Название">
-                                    <h:outputText value="#{product.name}" />
+                                    <f:facet name="header">
+                                        Name
+                                        <h:commandButton value="#{productBean.sortOrderName ? '↓' : '↑'}"
+                                                         action="#{productBean.sortByName}">
+                                            <f:ajax execute="@form" render="objectTable"/>
+                                        </h:commandButton>
+                                    </f:facet>
+                                    #{product.name}
                                 </p:column>
                                 <p:column headerText="Координаты">
-                                    <h:outputText value="#{product.coordinates.id}" />
+                                    <f:facet name="header">
+                                    Coordinates
+                                    </f:facet>
+                                    X: #{product.coordinates.x}, Y: #{product.coordinates.y}
                                 </p:column>
                                 <p:column headerText="Дата создания">
-                                    <h:outputText value="#{product.creationDate}" />
+                                    <f:facet name="header">
+                                        Creation Date
+                                        <h:commandButton value="#{productBean.sortOrderDate ? '↓' : '↑'}"
+                                                         action="#{productBean.sortByDate}">
+                                            <f:ajax execute="@form" render="objectTable"/>
+                                        </h:commandButton>
+                                    </f:facet>
+                                    #{product.creationDate}
                                 </p:column>
                                 <p:column headerText="Ед. измерения">
-                                    <h:outputText value="#{product.unitOfMeasure}" />
+                                    <f:facet name="header">
+                                        Unit Of Measure
+                                    </f:facet>
+                                    #{product.unitOfMeasure}
                                 </p:column>
-                                <p:column headerText="Мануфактура">
+                                <p:column headerText="Manufacturer ID">
+                                    <f:facet name="header">
+                                        ManufacturerID
+                                    </f:facet>
                                     <h:outputText value="#{product.manufacturer.id}" />
                                 </p:column>
                                 <p:column headerText="Цена">
-                                    <h:outputText value="#{product.price}" />
+                                    <f:facet name="header">
+                                        Price
+                                        <h:commandButton value="#{productBean.sortOrderPrice ? '↓' : '↑'}"
+                                                         action="#{productBean.sortByPrice}">
+                                            <f:ajax execute="@form" render="objectTable"/>
+                                        </h:commandButton>
+                                    </f:facet>
+                                    #{product.price}
                                 </p:column>
                                 <p:column headerText="Цена производства">
-                                    <h:outputText value="#{product.manufactureCost}" />
+                                    <f:facet name="header">
+                                        Manufacture Cost
+                                        <h:commandButton value="#{productBean.sortOrderManufactureCost ? '↓' : '↑'}"
+                                                         action="#{productBean.sortByManufactureCost}">
+                                            <f:ajax execute="@form" render="objectTable"/>
+                                        </h:commandButton>
+                                    </f:facet>
+                                    #{product.manufactureCost}
                                 </p:column>
                                 <p:column headerText="Рейтинг">
-                                    <h:outputText value="#{product.rating}" />
+                                    <f:facet name="header">
+                                        Rating
+                                        <h:commandButton value="#{productBean.sortOrderRating ? '↓' : '↑'}"
+                                                         action="#{productBean.sortByRating}">
+                                            <f:ajax execute="@form" render="objectTable"/>
+                                        </h:commandButton>
+                                    </f:facet>
+                                    #{product.rating}
                                 </p:column>
-                                <p:column headerText="Парт. номер">
-                                    <h:outputText value="#{product.partNumber}" />
+                                <p:column headerText="Part Number">
+                                    <f:facet name="header">
+                                        PartNumber
+                                    </f:facet>
+                                    #{product.partNumber}
                                 </p:column>
-                                <p:column headerText="Владелец">
+                                <p:column headerText="OwnerId">
+                                    <f:facet name="header">
+                                        OwnerId
+                                    </f:facet>
                                     <h:outputText value="#{product.owner.id}" />
+                                </p:column>
+                                <p:column headerText="CreatedBy">
+                                    <f:facet name="header">
+                                        CreatedBy
+                                    </f:facet>
+                                    #{product.user.username}
                                 </p:column>
 
                                 <!-- Действия: редактирование, удаление -->
                                 <p:column headerText="Действия">
+                                    <f:facet name="header">
+                                        Actions
+                                    </f:facet>
                                     <div class="btn-group">
+                                        <!-- Кнопка "Редактировать" доступна только для текущего пользователя -->
                                         <h:commandLink value="Редактировать"
                                                        action="#{productBean.editProduct(product.id)}"
-                                                       styleClass="btn btn-primary btn-sm btn-action" />
+                                                       styleClass="btn btn-primary btn-sm btn-action"
+                                                       rendered="#{product.user.username == userBean.user.username or userBean.user.role eq 'ADMIN'}" />
+
+                                        <!-- Кнопка "Удалить" доступна только для текущего пользователя -->
                                         <h:commandLink value="Удалить"
                                                        action="#{productBean.deleteProduct(product.id)}"
                                                        process="@form"
                                                        update="@form"
                                                        styleClass="btn btn-danger btn-sm btn-action"
-                                                       oncomplete="PF('deleteDialog').show()" />
+                                                       rendered="#{product.user.username == userBean.user.username or userBean.user.role eq 'ADMIN'}" />
                                     </div>
                                 </p:column>
                             </h:dataTable>
                         </div>
                     </p:tab>
 
-                    <!-- Вкладка создания нового объекта -->
+                    <!-- Другие вкладки -->
                     <p:tab id="tabCreate" title="Создать новый объект">
                         <h:link value="Создать новый продукт" outcome="createProduct.xhtml"
                                 styleClass="btn btn-success" />
@@ -119,28 +210,66 @@
                         </div>
                     </p:tab>
 
-                    <!-- Вкладка обновления объекта -->
-                    <p:tab id="tabUpdate" title="Обновить объект">
-                        <p:commandButton value="Обновить объект"
-                                         action="#{productBean.updateProduct}"
-                                         styleClass="btn btn-warning" />
+
+                    <!-- Новая вкладка -->
+                    <p:tab id="tabBecomeAdmin" title="Стать админом"
+                           rendered="#{userBean.user.role eq 'USER'}">
+                        <div class="text-center mt-4">
+                            <h:commandButton value="Запросить права админа"
+                                             action="#{userBean.requestAdminRights}"
+                                             styleClass="btn btn-primary"
+                                             process="@this"
+                                             update="statusMessage">
+                                <f:ajax execute="@this" render="statusMessage" />
+                            </h:commandButton>
+                            <div>
+                                <!-- Указываем id для элемента, который будет обновляться -->
+                                <h:outputText id="statusMessage" value="#{userBean.requestStatusMessage}" styleClass="text-success mt-2" />
+                            </div>
+                        </div>
+
+                    </p:tab>
+                    <p:tab id="tabManageRequests" title="Управление заявками"
+                           rendered="#{userBean.user.role eq 'ADMIN'}">
+                        <h3>Заявки на становление администратором</h3>
+                        <p:dataTable value="#{userBean.pendingRequests}" var="pendingUser"
+                                     styleClass="table table-striped table-bordered"
+                                     paginator="true" rows="10"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                     style="width: 100%; table-layout: auto;" paginatorPosition="bottom">
+                            <p:column headerText="Username">
+                                <h:outputText value="#{pendingUser.username}" />
+                            </p:column>
+                            <p:column headerText="Действия">
+                                <f:facet name="header">
+                                    Actions
+                                </f:facet>
+                                <div class="btn-group">
+                                    <!-- Кнопка "Одобрить" -->
+                                    <h:commandButton value="Одобрить"
+                                                     action="#{userBean.approveAdminRequest(pendingUser)}"
+                                                     styleClass="btn btn-success btn-sm"
+                                                     update=":mainForm:tabView"
+                                                     process="@this">
+                                        <f:ajax execute="@this" render=":mainForm:tabView" />
+                                    </h:commandButton>
+
+                                    <!-- Кнопка "Отклонить" -->
+                                    <h:commandButton value="Отклонить"
+                                                     action="#{userBean.rejectAdminRequest(pendingUser)}"
+                                                     styleClass="btn btn-danger btn-sm"
+                                                     update=":mainForm:tabView"
+                                                     process="@this">
+                                        <f:ajax execute="@this" render=":mainForm:tabView" />
+                                    </h:commandButton>
+                                </div>
+                            </p:column>
+                        </p:dataTable>
                     </p:tab>
 
-                    <!-- Вкладка удаления объекта -->
-                    <p:tab id="tabDelete" title="Удалить объект">
-                        <p:commandButton value="Удалить объект"
-                                         action="#{productBean.deleteProduct}"
-                                         styleClass="btn btn-danger" />
-                    </p:tab>
                 </p:tabView>
 
-                <!-- Диалог удаления -->
-                <p:dialog header="Удаление объекта"
-                          id="deleteDialog"
-                          modal="true"
-                          styleClass="dialog-header">
-                    <p:outputLabel value="#{productBean.deleteDialogContent}" />
-                </p:dialog>
+
 
             </h:form>
         </div>

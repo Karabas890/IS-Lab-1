@@ -7,6 +7,8 @@ import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import java.io.Serializable;
+import java.util.List;
+
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Getter;
@@ -24,6 +26,10 @@ public class UserBean implements Serializable {
     private String newPassword;
     private String confirmPassword;
     private Role role;
+    private boolean requestAdminRights; // Новое поле для запроса прав администратора
+    private User user;
+    // Новое поле для статуса запроса на получение прав администратора
+    private String requestStatusMessage; // Статус запроса на права админа
 
     private boolean loggedIn;
 
@@ -39,6 +45,14 @@ public class UserBean implements Serializable {
     public void setRole(Role role) {
         this.role = role;
     }
+    public String getRequestStatusMessage() {
+        return requestStatusMessage;
+    }
+
+    public void setRequestStatusMessage(String requestStatusMessage) {
+        this.requestStatusMessage = requestStatusMessage;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -99,19 +113,20 @@ public class UserBean implements Serializable {
 
     public String login() {
         System.out.println("Login starts");
-        User user = userService.findByUsernameAndPassword(username, password);
-        if (user == null) {
+        User checkUser = userService.findByUsernameAndPassword(username, password);
+        if (checkUser == null) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Неверное имя пользователя или пароль", "Неверное имя пользователя или пароль"));
             return null;
         }
 
         // Сохраняем имя пользователя в сессии
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("username", user.getUsername());
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("username", checkUser.getUsername());
         loggedIn = true;
 
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Вы успешно вошли в систему", "Вы успешно вошли в систему"));
+        user=checkUser;
         return "home?faces-redirect=true";
     }
 
@@ -126,6 +141,7 @@ public class UserBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Все поля должны быть заполнены.", "Все поля должны быть заполнены."));
             return null;
         }
+
 
         // Проверяем совпадение паролей
         if (!newPassword.equals(confirmPassword)) {
@@ -171,5 +187,61 @@ public class UserBean implements Serializable {
         System.out.println("getCurrentUser moment: ");
         String currentUserName = userService.getCurrentUserName(); // Метод или поле для получения имени пользователя
         return userService.findByUsername(currentUserName);
+    }
+    // Метод для запроса прав администратора
+    public void requestAdminRights() {
+        if (user == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка", "Вы не авторизованы."));
+            return;
+        }
+
+        // Изменяем поле requestAdminRights на true
+        user.setRequestAdminRights(true);
+
+        // Сохраняем изменения в базе данных
+        userService.update(user);
+
+        // Устанавливаем сообщение о статусе запроса
+        requestStatusMessage = "Ваш запрос на получение прав администратора был отправлен.";
+
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Запрос отправлен", requestStatusMessage));
+    }
+    // Геттеры и сеттеры для requestAdminRights
+    public boolean isRequestAdminRights() {
+        return requestAdminRights;
+    }
+
+    public void setRequestAdminRights(boolean requestAdminRights) {
+        this.requestAdminRights = requestAdminRights;
+        loadPendingRequests();
+    }
+    private List<User> pendingRequests;
+
+    public List<User> getPendingRequests() {
+        loadPendingRequests();
+        return pendingRequests;
+    }
+
+    public void setPendingRequests(List<User> pendingRequests) {
+        this.pendingRequests = pendingRequests;
+    }
+    public void approveAdminRequest(User user) {
+        System.out.println("approveAdminRequest moment");
+        user.setRequestAdminRights(false);
+        user.setRole(Role.ADMIN); // Назначаем роль ADMIN
+        userService.save(user); // Сохраняем изменения в базе данных
+        loadPendingRequests(); // Перезагружаем список заявок
+    }
+
+    public void rejectAdminRequest(User user) {
+        user.setRequestAdminRights(false); // Отклоняем заявку
+        userService.save(user); // Сохраняем изменения в базе данных
+        loadPendingRequests(); // Перезагружаем список заявок
+    }
+
+    private void loadPendingRequests() {
+        pendingRequests = userService.findUsersWithPendingAdminRights(); // Загружаем список пользователей с активными заявками
     }
 }

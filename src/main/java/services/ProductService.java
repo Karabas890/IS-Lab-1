@@ -38,7 +38,11 @@ public class ProductService implements Serializable{
     //Сохранение продукта
     @Transactional
     public void save(Product product) {
-        entityManager.persist(product);
+        if (product.getId() == null) {
+            entityManager.persist(product); // Новый объект -> persist
+        } else {
+            entityManager.merge(product);   // Существующий объект -> merge
+        }
     }
 
     // Удаление продукта
@@ -55,4 +59,12 @@ public class ProductService implements Serializable{
         // Проверка логики на связанные объекты (например, через внешние ключи)
         return false; // На основе конкретной логики для связи объектов
     }
+    // Метод для вычисления суммы всех значений rating
+    public float getTotalRating() {
+        Float totalRating = entityManager.createQuery(
+                        "SELECT COALESCE(SUM(p.rating), 0) FROM Product p", Float.class)
+                .getSingleResult();
+        return totalRating != null ? totalRating : 0.0f;
+    }
+
 }

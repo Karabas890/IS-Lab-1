@@ -1,0 +1,57 @@
+<!-- userInfo.xhtml -->
+
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core">
+
+    <div class="user-info-container d-flex justify-content-end align-items-center p-2 bg-light border rounded">
+
+        <div class="d-flex align-items-center mr-3">
+            <h:outputText value="Текущий пользователь: #{userBean.user.username}" styleClass="font-weight-bold mr-2"/>
+            <h:outputText value="(Администратор)" styleClass="text-danger font-weight-bold"
+                          rendered="#{userBean.user.role eq 'ADMIN'}"/>
+        </div>
+
+        <h:form style="margin: 0; padding: 0;">
+            <h:commandLink action="#{userBean.logout}" styleClass="logout-icon">
+                <span class="pi pi-sign-out"></span>
+            </h:commandLink>
+        </h:form>
+
+        <style>
+            .logout-icon {
+                cursor: pointer;
+                text-decoration: none; /* Убираем подчеркивание */
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .logout-icon span {
+                font-size: 1.5rem;
+                color: #dc3545;
+            }
+            .fixed-user-info {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: white; /* Фон, чтобы не перекрывалось содержимое */
+                z-index: 1000; /* Выше остальных элементов */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Тень для разделения */
+                padding: 10px;
+            }
+            .content {
+                margin-top: 80px; /* Отступ вниз, чтобы контент не скрывался под userInfo */
+            }
+
+        </style>
+
+
+
+
+
+
+    </div>
+</ui:composition>
