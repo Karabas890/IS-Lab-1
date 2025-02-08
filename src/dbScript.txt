@@ -67,5 +67,20 @@ CREATE TABLE product (
     FOREIGN KEY (owner_id) REFERENCES person (id),
     FOREIGN KEY (user_id) REFERENCES users (id) -- Связь с таблицей пользователей
 );
+CREATE TABLE product_history (
+    id BIGINT SERIAL PRIMARY KEY,                -- Уникальный идентификатор записи
+    product_id BIGINT NOT NULL,                           -- Идентификатор продукта
+    user_id BIGINT NOT NULL,                              -- Идентификатор пользователя, выполнившего операцию
+    operation_type VARCHAR(50) NOT NULL,                  -- Тип операции (CREATE, UPDATE, DELETE)
+    operation_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Дата и время операции
+    comment VARCHAR(255),                                 -- Комментарий (по желанию)
+    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE, -- Связь с таблицей продуктов
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE    -- Связь с таблицей пользователей
+);
+
+-- Индексы для быстрого поиска по полям product_id и user_id
+CREATE INDEX idx_product_history_product_id ON product_history(product_id);
+CREATE INDEX idx_product_history_user_id ON product_history(user_id);
+
 
 

@@ -36,7 +36,14 @@ public class PersonBean implements Serializable {
     }
 
     public String savePerson() {
+
         try {
+            // Проверка на уникальность passportID
+            if (personService.isPassportIDExists(person.getPassportID())) {
+                this.message = "Ошибка: паспорт с таким номером уже существует!";
+                this.messageStyle = "text-danger";
+                return null; // Если есть ошибка, выходим
+                }
             person.setLocation(locationService.findById(selectedLocationId));
             personService.save(person);
             this.message = "Объект Person успешно сохранён!";

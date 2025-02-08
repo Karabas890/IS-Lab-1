@@ -51,4 +51,13 @@ public class PersonService implements Serializable {
             entityManager.remove(person);
         }
     }
+    // Метод для проверки уникальности passportID
+    public boolean isPassportIDExists(String passportID) {
+        List<Person> persons = entityManager.createQuery("SELECT p FROM Person p WHERE p.passportID = :passportID", Person.class)
+                .setParameter("passportID", passportID)
+                .getResultList();
+        return !persons.isEmpty();  // Если список не пустой, значит такой паспорт уже существует
+    }
+
+
 }

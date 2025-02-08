@@ -13,6 +13,8 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import lombok.Getter;
 import lombok.Setter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 @Named
 @SessionScoped
@@ -113,7 +115,9 @@ public class UserBean implements Serializable {
 
     public String login() {
         System.out.println("Login starts");
-        User checkUser = userService.findByUsernameAndPassword(username, password);
+        // Хэшируем введенный пароль
+        String hashedPassword = hashPassword(password);
+        User checkUser = userService.findByUsernameAndPassword(username, hashedPassword);
         if (checkUser == null) {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Неверное имя пользователя или пароль", "Неверное имя пользователя или пароль"));
@@ -141,6 +145,12 @@ public class UserBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Все поля должны быть заполнены.", "Все поля должны быть заполнены."));
             return null;
         }
+        // Проверка длины пароля (не менее 3 символов)
+        if (newPassword.length() < 3) {
+            context.addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Пароль должен содержать не менее 3 символов.", "Пароль должен содержать не менее 3 символов."));
+            return null;
+        }
 
 
         // Проверяем совпадение паролей
@@ -157,17 +167,33 @@ public class UserBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Пользователь с таким именем уже существует.", "Пользователь с таким именем уже существует."));
             return null;
         }
+        // Хэшируем пароль с использованием SHA-256
+        String hashedPassword = hashPassword(newPassword);
 
         // Создаем нового пользователя
         User newUser = new User();
         newUser.setUsername(newUsername);
-        newUser.setPassword(newPassword); // Рекомендуется зашифровать пароль перед сохранением
+        newUser.setPassword(hashedPassword); // Рекомендуется зашифровать пароль перед сохранением
         newUser.setRole(Role.USER);
         userService.save(newUser);
 
         context.addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Регистрация успешна", "Регистрация успешна"));
         return null;
+    }
+    // Метод для хэширования пароля с использованием SHA-256
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Ошибка при хэшировании пароля", e);
+        }
     }
 
 

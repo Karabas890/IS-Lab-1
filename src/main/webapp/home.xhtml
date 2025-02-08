@@ -57,20 +57,32 @@
 
                 <p:tabView id="tabView" style="width: 100%;" styleClass="tabView-wrapper">
 
+
                     <!-- Таблица с объектами -->
                     <p:tab id="tabObjects" title="Объекты">
+                        <h:form id="filterForm">
+                            <h:panelGrid columns="2" style="width: 100%">
+                                <h:inputText id="nameFilter" value="#{productBean.nameFilter}"
+                                             a:placeholder="Name filter"
+                                             style="width: 50%;margin-left: 7%">
+                                    <f:ajax event="keyup" execute="@this" render="objectTable"/>
+                                </h:inputText>
+
+                                <h:inputText id="partNumberFilter" value="#{productBean.partNumberFilter}"
+                                             a:placeholder="Part Number filter"
+                                             style="width: 50%;margin-left: 27,5%">
+                                    <f:ajax event="keyup" execute="@this" render="objectTable"/>
+                                </h:inputText>
+                            </h:panelGrid>
+                        </h:form>
+
                         <div class="table-container">
 
                             <h:dataTable id="objectTable"
-                                         value="#{productBean.productList}"
+                                         value="#{productBean.paginatedProducts}"
                                          var="product"
-                                         lazy="true"
                                          styleClass="table table-striped table-bordered"
-                                         paginator="true"
-                                         rows="5"
-                                         editable="true"
-                                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                                         style="width: 100%; table-layout: auto;" paginatorPosition="bottom">
+                                         style="width: 100%; table-layout: auto;">
                                 <!-- Колонки таблицы -->
                                 <p:column headerText="ID">
                                     <f:facet name="header">
@@ -194,6 +206,24 @@
                                 </p:column>
                             </h:dataTable>
 
+                            <!-- Пагинатор -->
+                            <div class="d-flex justify-content-center mt-2">
+                                <h:panelGroup id="paginationControls" class="text-center">
+                                    <h:commandButton value="Previous" action="#{productBean.previousPage}"
+                                                     disabled="#{productBean.currentPage == 1}"
+                                                     styleClass="btn btn-dark btn-sm mx-2">
+                                        <f:ajax execute="@this" render="dataTableId paginationInfo paginationId paginationControls"/>
+                                    </h:commandButton>
+
+                                    <span id="paginationInfo" class="mx-2">Page #{productBean.currentPage} of #{productBean.totalPages}</span>
+
+                                    <h:commandButton value="Next" action="#{productBean.nextPage}"
+                                                     disabled="#{productBean.currentPage == productBean.totalPages}"
+                                                     styleClass="btn btn-dark btn-sm mx-2">
+                                        <f:ajax execute="@this" render="dataTableId paginationInfo paginationId paginationControls"/>
+                                    </h:commandButton>
+                                </h:panelGroup>
+                            </div>
 
                             <!-- Заголовок и таблица с информацией о Manufacturer -->
                             <h:outputText value="Информация о производителе" rendered="#{not empty productBean.clickedManufacturer}" styleClass="h2 mt-4"/>
@@ -335,108 +365,10 @@
                                 styleClass="btn btn-success" />
                     </p:tab>
                     <!-- Вкладка Операции над объектами -->
-                    <p:tab id="tabOperations" title="Операции над объектами">
-                        <h:form>
-                            <!-- Панель для расчета суммы рейтингов -->
-                            <h:panelGrid columns="1" styleClass="mb-4">
-                                <h:commandButton value="Рассчитать сумму рейтингов"
-                                                 action="#{productBean.calculateTotalRating}"
-                                                 styleClass="btn btn-primary" />
-
-                                <!-- Вывод суммы рейтингов только после вычисления -->
-                                <h:outputText value="Сумма рейтингов: #{productBean.totalRating}"
-                                              rendered="#{not empty productBean.totalRating}"
-                                              styleClass="mt-3" />
-                            </h:panelGrid>
-
-                            <!-- Панель для группировки по partNumber -->
-                            <h:panelGrid columns="1">
-                                <h:commandButton value="Группировать по partNumber"
-                                                 action="#{productBean.groupByPartNumber}"
-                                                 styleClass="btn btn-primary" />
-
-                                <!-- Отображение результатов группировки -->
-                                <h:dataTable value="#{productBean.groupedByPartNumber}" var="group" rendered="#{not empty productBean.groupedByPartNumber}" styleClass="table">
-                                    <!-- Заголовки таблицы -->
-                                    <h:column>
-                                        <f:facet name="header">PartNumber</f:facet>
-                                        #{group[0]}
-                                    </h:column>
-                                    <h:column>
-                                        <f:facet name="header">Количество</f:facet>
-                                        #{group[1]}
-                                    </h:column>
-                                </h:dataTable>
-
-                            </h:panelGrid>
-                            <!-- Панель для фильтрации по рейтингу -->
-                            <h:panelGrid columns="2" styleClass="mt-4">
-                                <h:outputLabel for="ratingThreshold" value="Введите минимальный рейтинг:" />
-                                <h:inputText id="ratingThreshold" value="#{productBean.ratingThreshold}"
-                                             validator="#{productBean.validateRating}"
-                                             converterMessage="Минимальный рейтинг должен быть числом"
-                                             class="form-control"/>
-                                <h:commandButton value="Фильтровать по рейтингу"
-                                                 action="#{productBean.filterProductsByRating}"
-                                                 styleClass="btn btn-primary" />
-                                <h:message for="ratingThreshold" styleClass="text-danger" />
-                            </h:panelGrid>
-                            <!-- Панель для фильтрации по цене -->
-                            <h:panelGrid columns="2" styleClass="mb-4">
-                                <h:outputLabel value="Минимальная цена" for="minPrice" />
-                                <h:inputText id="minPrice" value="#{productBean.minPrice}"
-                                             validator="#{productBean.validatePrice}"
-                                             converterMessage="Цена Должна быть числом"
-                                             class="form-control"/>
-
-
-                                <h:outputLabel value="Максимальная цена" for="maxPrice" />
-                                <h:inputText id="maxPrice" value="#{productBean.maxPrice}"
-                                             validator="#{productBean.validatePrice}"
-                                             converterMessage="Цена должна быть числом"
-                                             class="form-control"/>
-                                <h:commandButton value="Фильтровать по цене" action="#{productBean.filterProductsByPrice}" styleClass="btn btn-primary" />
-                                <h:message for="maxPrice" styleClass="text-danger" />
-                                <h:message for="minPrice" styleClass="text-danger" />
-                            </h:panelGrid>
-
-                            <!-- Отображение результатов фильтрации -->
-                            <h:dataTable value="#{productBean.filteredProducts}" var="product" rendered="#{not empty productBean.filteredProducts}" styleClass="table">
-                                <h:column>
-                                    <f:facet name="header">Product Name</f:facet>
-                                    #{product.name}
-                                </h:column>
-                                <h:column>
-                                    <f:facet name="header">Price</f:facet>
-                                    #{product.price}
-                                </h:column>
-                                <h:column>
-                                    <f:facet name="header">Rating</f:facet>
-                                    #{product.rating}
-                                </h:column>
-                            </h:dataTable>
-                            <!-- Форма для применения скидки -->
-                            <h:form id="discountForm">
-                                <h:panelGrid columns="2" styleClass="mb-4">
-                                    <h:outputLabel value="Процент скидки" for="discountPercentage" />
-                                    <h:inputText id="discountPercentage" value="#{productBean.discountPercentage}"
-                                                 validator="#{productBean.validateDiscountPercentage}"
-                                                 converterMessage="Процент должен быть числом"
-                                                 class="form-control"/>
-
-                                    <h:commandButton value="Применить скидку" action="#{productBean.applyDiscountToProducts}"
-                                                     styleClass="btn btn-primary" />
-                                    <h:message for="discountPercentage" styleClass="text-danger" />
-                                </h:panelGrid>
-
-
-                                <!-- Сообщение об успешной операции/ошибке -->
-                                <h:outputText value="#{productBean.opMessage}" rendered="#{not empty productBean.opMessage}"
-                                              styleClass="mt-3" style="color:#{productBean.opMessageStyle}" />
-                            </h:form>
-
-                        </h:form>
-                    </p:tab>
+                    <p:tab id="tabOp" title="Операции над объектами">
+                    <h:link value="Перейти к операциям" outcome="operations.xhtml"
+                            styleClass="btn btn-success" />
+                </p:tab>
 
 
 
@@ -503,5 +435,24 @@
 
             </h:form>
         </div>
+        <script>
+            var ws = new WebSocket("ws:/localhost:8080/InfSysLab1/websocket");
+            ws.onopen = function () {
+                console.log("Connected to WebSocket server");
+            };
+
+            ws.onmessage = function(event) {
+                console.log("Received update:", event.data);
+                location.reload(); // Перезагрузить страницу или использовать AJAX для обновления таблицы
+
+            };
+            ws.onclose = function () {
+                console.log("Disconnected from WebSocket server");
+            };
+
+            ws.onerror = function (error) {
+                console.error("WebSocket error: " + error);
+            };
+        </script>
     </h:body>
 </ui:composition>

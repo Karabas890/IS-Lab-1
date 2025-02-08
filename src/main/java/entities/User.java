@@ -2,6 +2,7 @@ package entities;
 import enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,9 +14,12 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="username")
+    @NotNull
+    @Column(name="username", unique = true)
     private String username;
+    @NotNull
     @Column(name="password")
+    @Size(min=2)
     private String password;
     @NotNull
     @Enumerated(EnumType.STRING)

@@ -100,6 +100,10 @@ public class ProductBean implements Serializable {
     private List<Product> productsToUpdate= new ArrayList<>(); // <-- Добавлено;
 
     private List<Product> filteredProducts;
+    private List<Product> paginatedProducts; // Продукты на текущей странице
+    private int currentPage = 1; // Текущая страница
+    private int rowsPerPage = 5; // Количество строк на страницу
+    private int totalRows; // Общее количество строк
     @PostConstruct
     public void init() {
         product = new Product();
@@ -134,7 +138,7 @@ public class ProductBean implements Serializable {
         productList = productService.findAll();
         System.out.println("productList: "+ productList);
         return productList.stream()
-                .filter(product -> nameFilter == null || nameFilter.isEmpty() || this.product.getName().equalsIgnoreCase(nameFilter)) // Фильтруем по имени, если nameFilter задан
+                .filter(product -> nameFilter == null || nameFilter.isEmpty() || this.product.getName().toLowerCase().contains(nameFilter.toLowerCase())) // Фильтруем по имени, если nameFilter задан
                 .filter(product -> partNumberFilter == null || partNumberFilter.isEmpty() || this.product.getPartNumber().equalsIgnoreCase(partNumberFilter))
                 .sorted(comparator)
                 .collect(Collectors.toList());
@@ -212,12 +216,17 @@ public class ProductBean implements Serializable {
     }
     // Обновление существующего продукта
     public void updateProduct() {
+        User currentUser = userBean.getCurrentUser();
         productService.update(product);
+        //productService.createHistory(product,currentUser,"UPDATE");
     }
 
     // Удаление продукта
     public void deleteProduct(long id) {
         productService.delete(id);
+        // Присваиваем текущего пользователя
+        //User currentUser = userBean.getCurrentUser();
+        //productService.createHistory(product,currentUser,"DELETE");
     }
 
 
@@ -225,7 +234,8 @@ public class ProductBean implements Serializable {
         selectedProduct = productService.findById(productId); // Загружаем продукт по ID
 
         System.out.println("Selected product for edit: "+ selectedProduct);
-
+        //User currentUser = userBean.getCurrentUser();
+        //productService.createHistory(product,currentUser,"UPDATE");
         return "editProduct.xhtml?faces-redirect=true";
     }
     // Метод для извлечения ID из URL и загрузки продукта
@@ -284,6 +294,7 @@ public class ProductBean implements Serializable {
 
             // Сохраняем продукт
             productService.save(product);
+            //productService.createHistory(product,currentUser,"CREATE");
             product = new Product();  // Создаем новый объект, чтобы не обновлялся старый
 
 
@@ -299,6 +310,8 @@ public class ProductBean implements Serializable {
 
             // Сохраняем обновленный продукт через сервис
             productService.update(selectedProduct);
+            // User currentUser = userBean.getCurrentUser();
+            //productService.createHistory(product,currentUser,"UPDATE");
 
             // Устанавливаем сообщение об успешном обновлении
             setMessage("Продукт успешно обновлен!", "alert-success");
@@ -373,6 +386,7 @@ public class ProductBean implements Serializable {
         System.out.println("TotalRating:" +this.totalRating);
     }
     public void groupByPartNumber() {
+        System.out.println("groupByPartNumber");
         List<Object[]> grouped = productService.groupByPartNumber();
         groupedByPartNumber = new ArrayList<>();
         for (Object[] group : grouped) {
@@ -536,6 +550,39 @@ public class ProductBean implements Serializable {
                     "Адрес с данным ID не найден.", null);
             FacesContext.getCurrentInstance().addMessage(null, facesMessage);
         }
+    }
+    public void loadProducts() {
+        productList = productService.findAll().stream()
+                .filter(product -> nameFilter == null || nameFilter.isEmpty() || product.getName().toLowerCase().contains(nameFilter.toLowerCase()))
+                .filter(product -> partNumberFilter == null || partNumberFilter.isEmpty() || product.getPartNumber().equalsIgnoreCase(partNumberFilter))
+                .sorted(comparator)
+                .collect(Collectors.toList());
+        totalRows = productList.size();
+        updatePaginatedProducts();
+    }
+    private void updatePaginatedProducts() {
+        int fromIndex = (currentPage - 1) * rowsPerPage;
+        int toIndex = Math.min(fromIndex + rowsPerPage, totalRows);
+        paginatedProducts = productList.subList(fromIndex, toIndex);
+    }
+    public void previousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            updatePaginatedProducts();
+        }
+    }
+    public void nextPage() {
+        if (currentPage < getTotalPages()) {
+            currentPage++;
+            updatePaginatedProducts();
+        }
+    }
+    public int getTotalPages() {
+        return (int) Math.ceil((double) totalRows / rowsPerPage);
+    }
+    public List<Product> getPaginatedProducts() {
+        loadProducts(); // Загружаем свежие данные из БД
+        return paginatedProducts;
     }
     public Person getClickedPerson() {
         return clickedPerson;

@@ -2,17 +2,140 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
 
 <h:head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <title>Управление продуктами</title>
 </h:head>
 
 <h:body>
+    <!-- Включение информации о текущем пользователе -->
+    <ui:include src="userInfo.xhtml"/>
     <h:form>
-        <h:commandButton value="Рассчитать сумму рейтингов" action="#{productBean.calculateTotalRating}" />
-        <h:outputText value="Сумма рейтингов: #{productBean.calculateTotalRating()}" />
+        <!-- Панель для расчета суммы рейтингов -->
+        <h:panelGrid columns="1" styleClass="mb-4">
+            <h:commandButton value="Рассчитать сумму рейтингов"
+                             action="#{productBean.calculateTotalRating}"
+                             styleClass="btn btn-primary" />
+
+            <!-- Вывод суммы рейтингов только после вычисления -->
+            <h:outputText value="Сумма рейтингов: #{productBean.totalRating}"
+                          rendered="#{not empty productBean.totalRating}"
+                          styleClass="mt-3" />
+        </h:panelGrid>
+
+        <!-- Панель для группировки по partNumber -->
+        <h:panelGrid columns="1">
+            <h:commandButton value="Группировать по partNumber"
+                             action="#{productBean.groupByPartNumber}"
+                             styleClass="btn btn-primary" />
+
+            <!-- Отображение результатов группировки -->
+            <h:dataTable value="#{productBean.groupedByPartNumber}" var="group" rendered="#{not empty productBean.groupedByPartNumber}" styleClass="table">
+                <!-- Заголовки таблицы -->
+                <h:column>
+                    <f:facet name="header">PartNumber</f:facet>
+                    #{group[0]}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Количество</f:facet>
+                    #{group[1]}
+                </h:column>
+            </h:dataTable>
+
+        </h:panelGrid>
+        <!-- Панель для фильтрации по рейтингу -->
+        <h:panelGrid columns="2" styleClass="mt-4">
+            <h:outputLabel for="ratingThreshold" value="Введите минимальный рейтинг:" />
+            <h:inputText id="ratingThreshold" value="#{productBean.ratingThreshold}"
+                         validator="#{productBean.validateRating}"
+                         converterMessage="Минимальный рейтинг должен быть числом"
+                         class="form-control"/>
+            <h:commandButton value="Фильтровать по рейтингу"
+                             action="#{productBean.filterProductsByRating}"
+                             styleClass="btn btn-primary" />
+            <h:message for="ratingThreshold" styleClass="text-danger" />
+        </h:panelGrid>
+        <!-- Панель для фильтрации по цене -->
+        <h:panelGrid columns="2" styleClass="mb-4">
+            <h:outputLabel value="Минимальная цена" for="minPrice" />
+            <h:inputText id="minPrice" value="#{productBean.minPrice}"
+                         validator="#{productBean.validatePrice}"
+                         converterMessage="Цена Должна быть числом"
+                         class="form-control"/>
+
+
+            <h:outputLabel value="Максимальная цена" for="maxPrice" />
+            <h:inputText id="maxPrice" value="#{productBean.maxPrice}"
+                         validator="#{productBean.validatePrice}"
+                         converterMessage="Цена должна быть числом"
+                         class="form-control"/>
+            <h:commandButton value="Фильтровать по цене" action="#{productBean.filterProductsByPrice}" styleClass="btn btn-primary" />
+            <h:message for="maxPrice" styleClass="text-danger" />
+            <h:message for="minPrice" styleClass="text-danger" />
+        </h:panelGrid>
+
+        <!-- Отображение результатов фильтрации -->
+        <h:dataTable value="#{productBean.filteredProducts}" var="product" rendered="#{not empty productBean.filteredProducts}" styleClass="table">
+            <h:column>
+                <f:facet name="header">Product Name</f:facet>
+                #{product.name}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Price</f:facet>
+                #{product.price}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Rating</f:facet>
+                #{product.rating}
+            </h:column>
+        </h:dataTable>
+        <!-- Форма для применения скидки -->
+        <h:form id="discountForm">
+            <h:panelGrid columns="2" styleClass="mb-4">
+                <h:outputLabel value="Процент скидки" for="discountPercentage" />
+                <h:inputText id="discountPercentage" value="#{productBean.discountPercentage}"
+                             validator="#{productBean.validateDiscountPercentage}"
+                             converterMessage="Процент должен быть числом"
+                             class="form-control"/>
+
+                <h:commandButton value="Применить скидку" action="#{productBean.applyDiscountToProducts}"
+                                 styleClass="btn btn-primary" />
+                <h:message for="discountPercentage" styleClass="text-danger" />
+            </h:panelGrid>
+
+
+            <!-- Сообщение об успешной операции/ошибке -->
+            <h:outputText value="#{productBean.opMessage}" rendered="#{not empty productBean.opMessage}"
+                          styleClass="mt-3" style="color:#{productBean.opMessageStyle}" />
+        </h:form>
+        <!-- Кнопки управления -->
+        <div class="d-flex justify-content-center">
+            <h:button value="Назад" outcome="home.xhtml" styleClass="btn btn-secondary btn-lg" />
+        </div>
+
     </h:form>
+    <script>
+        var ws = new WebSocket("ws:/localhost:8080/InfSysLab1/websocket");
+        ws.onopen = function () {
+            console.log("Connected to WebSocket server");
+        };
+
+        ws.onmessage = function(event) {
+            console.log("Received update:", event.data);
+            location.reload(); // Перезагрузить страницу или использовать AJAX для обновления таблицы
+
+        };
+        ws.onclose = function () {
+            console.log("Disconnected from WebSocket server");
+        };
+
+        ws.onerror = function (error) {
+            console.error("WebSocket error: " + error);
+        };
+    </script>
 </h:body>
 
 </html>
