@@ -1,6 +1,7 @@
 // PersonBean.java
 package beans;
 
+import entities.Organization;
 import entities.Person;
 import entities.Location;
 import enums.Color;
@@ -40,6 +41,7 @@ public class PersonBean implements Serializable {
             personService.save(person);
             this.message = "Объект Person успешно сохранён!";
             this.messageStyle = "text-success";
+            person = new Person();  // Создаем новый объект, чтобы не обновлялся старый
         } catch (Exception e) {
             this.message = "Ошибка при сохранении объекта Person: ";
             this.messageStyle = "text-danger";

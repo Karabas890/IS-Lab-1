@@ -2,9 +2,11 @@ package services;
 
 import entities.Person;
 import entities.Product;
+import entities.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
@@ -60,11 +62,38 @@ public class ProductService implements Serializable{
         return false; // На основе конкретной логики для связи объектов
     }
     // Метод для вычисления суммы всех значений rating
-    public float getTotalRating() {
-        Float totalRating = entityManager.createQuery(
-                        "SELECT COALESCE(SUM(p.rating), 0) FROM Product p", Float.class)
-                .getSingleResult();
-        return totalRating != null ? totalRating : 0.0f;
+    public Double getTotalRating() {
+        TypedQuery<Double> query = entityManager.createQuery("SELECT SUM(p.rating) FROM Product p", Double.class);
+        return query.getSingleResult();
     }
+    public List<Object[]> groupByPartNumber() {
+        TypedQuery<Object[]> query = entityManager.createQuery(
+                "SELECT p.partNumber, COUNT(p) FROM Product p GROUP BY p.partNumber", Object[].class);
+        return query.getResultList();
+    }
+    // Метод для фильтрации продуктов по рейтингу
+    public List<Product> getProductsAboveRating(Float ratingThreshold) {
+        TypedQuery<Product> query = entityManager.createQuery(
+                "SELECT p FROM Product p WHERE p.rating > :ratingThreshold", Product.class);
+        query.setParameter("ratingThreshold", ratingThreshold);
+        return query.getResultList();
+    }
+    // Метод для получения продукции в заданном диапазоне цен
+    public List<Product> getProductsInPriceRange(Integer minPrice, Integer maxPrice) {
+        TypedQuery<Product> query = entityManager.createQuery(
+                "SELECT p FROM Product p WHERE p.price BETWEEN :minPrice AND :maxPrice", Product.class);
+        query.setParameter("minPrice", minPrice);
+        query.setParameter("maxPrice", maxPrice);
+        return query.getResultList();
+    }
+    // Метод для получения продуктов конкретного пользователя
+    public List<Product> getProductsByUser(User user) {
+        TypedQuery<Product> query = entityManager.createQuery(
+                "SELECT p FROM Product p WHERE p.user = :user", Product.class);
+        query.setParameter("user", user);
+        return query.getResultList();
+    }
+
+
 
 }

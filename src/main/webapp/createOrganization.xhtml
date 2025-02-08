@@ -72,7 +72,7 @@
             <div class="mb-3">
                 <label for="address" class="form-label">Адрес:</label>
                 <h:selectOneMenu id="address" value="#{organizationBean.selectedAddressId}" class="form-select">
-                    <f:selectItems value="#{personBean.existingLocations}" var="address"
+                    <f:selectItems value="#{organizationBean.existingAddresses}" var="address"
                                    itemLabel="#{address}" itemValue="#{address.id}" />
                 </h:selectOneMenu>
                 <h:message for="address" class="text-danger" />

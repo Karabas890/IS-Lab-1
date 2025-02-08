@@ -1,6 +1,7 @@
 package beans;
 
 import entities.Location;
+import entities.Organization;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
@@ -44,6 +45,7 @@ public class LocationBean implements Serializable {
 
             //resetForm(); // Сброс формы
             //loadExistingLocations(); // Обновление списка существующих локаций
+            location = new Location();  // Создаем новый объект, чтобы не обновлялся старый
             return null; // Остаёмся на текущей странице для отображения сообщения
         } catch (Exception e) {
             System.err.println("Ошибка при сохранении локации: ");

@@ -1,5 +1,6 @@
 package beans;
 
+import entities.Product;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -40,6 +41,7 @@ public class AddressBean implements Serializable {
             this.success = false;
             e.printStackTrace();
         }
+        address = new Address();  // Создаем новый объект, чтобы не обновлялся старый
         return null; // Оставаться на текущей странице
     }
 

@@ -1,4 +1,5 @@
 package beans;
+import entities.Address;
 import entities.Coordinates;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -49,6 +50,7 @@ public class CoordinatesBean implements Serializable {
             // Устанавливаем сообщение об успехе
             message = "Координаты успешно сохранены!";
             messageStyle = "alert-success"; // Стиль Bootstrap для успешного сообщения
+            coordinate = new Coordinates();  // Создаем новый объект, чтобы не обновлялся старый
             return null; // Остаёмся на текущей странице для отображения сообщения
         } catch (Exception e) {
             System.err.println("Ошибка при сохранении координат: " + e.getMessage());

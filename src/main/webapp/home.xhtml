@@ -1,4 +1,5 @@
 <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
@@ -66,7 +67,7 @@
                                          lazy="true"
                                          styleClass="table table-striped table-bordered"
                                          paginator="true"
-                                         rows="10"
+                                         rows="5"
                                          editable="true"
                                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                                          style="width: 100%; table-layout: auto;" paginatorPosition="bottom">
@@ -117,7 +118,8 @@
                                     <f:facet name="header">
                                         ManufacturerID
                                     </f:facet>
-                                    <h:outputText value="#{product.manufacturer.id}" />
+                                    <h:commandButton value="#{product.manufacturer.id}" action="#{productBean.loadManufacturerInfo(product.manufacturer.id)}"
+                                                     styleClass="btn btn-info btn-sm" />
                                 </p:column>
                                 <p:column headerText="Цена">
                                     <f:facet name="header">
@@ -159,7 +161,8 @@
                                     <f:facet name="header">
                                         OwnerId
                                     </f:facet>
-                                    <h:outputText value="#{product.owner.id}" />
+                                    <h:commandButton value="#{product.owner.id}" action="#{productBean.loadPersonInfo(product.owner.id)}"
+                                                     styleClass="btn btn-info btn-sm" />
                                 </p:column>
                                 <p:column headerText="CreatedBy">
                                     <f:facet name="header">
@@ -190,28 +193,254 @@
                                     </div>
                                 </p:column>
                             </h:dataTable>
+
+
+                            <!-- Заголовок и таблица с информацией о Manufacturer -->
+                            <h:outputText value="Информация о производителе" rendered="#{not empty productBean.clickedManufacturer}" styleClass="h2 mt-4"/>
+                            <h:dataTable id="manufacturerTable" value="#{productBean.clickedManufacturer}" var="manufacturer"
+                                         rendered="#{not empty productBean.clickedManufacturer}"
+                                         styleClass="table table-striped table-bordered mt-3">
+                                <p:column headerText="ID">
+                                    <f:facet name="header">ID</f:facet>
+                                    #{manufacturer.id}
+                                </p:column>
+                                <p:column headerText="Название">
+                                    <f:facet name="header">Название</f:facet>
+                                    #{manufacturer.name}
+                                </p:column>
+                                <p:column headerText="Адрес">
+                                    <f:facet name="header">Адрес ID</f:facet>
+                                    <h:commandButton value="#{manufacturer.officialAddress.id}"
+                                                     action="#{productBean.loadAddressInfo(manufacturer.officialAddress.id)}"
+                                                     styleClass="btn btn-info btn-sm" />
+                                </p:column>
+                                <p:column headerText="Годовой оборот">
+                                    <f:facet name="header">Годовой оборот</f:facet>
+                                    #{manufacturer.annualTurnover}
+                                </p:column>
+                                <p:column headerText="Число сотрудников">
+                                    <f:facet name="header">Число сотрудников</f:facet>
+                                    #{manufacturer.employeesCount}
+                                </p:column>
+                                <p:column headerText="Полное название">
+                                    <f:facet name="header">Полное название</f:facet>
+                                    #{manufacturer.fullName}
+                                </p:column>
+                                <p:column headerText="Рейтинг">
+                                    <f:facet name="header">Рейтинг</f:facet>
+                                    #{manufacturer.rating}
+                                </p:column>
+                                <p:column headerText="Тип">
+                                    <f:facet name="header">Тип</f:facet>
+                                    #{manufacturer.type}
+                                </p:column>
+                            </h:dataTable>
+
+                            <!-- Таблица с информацией об адресе -->
+                            <h:outputText value="Информация об адресе" rendered="#{not empty productBean.clickedAddress}" styleClass="h2 mt-4"/>
+                            <h:dataTable id="addressTable" value="#{productBean.clickedAddress}" var="address"
+                                         rendered="#{not empty productBean.clickedAddress}"
+                                         styleClass="table table-striped table-bordered mt-3">
+                                <p:column headerText="ID">
+                                    <f:facet name="header">ID</f:facet>
+                                    #{address.id}
+                                </p:column>
+                                <p:column headerText="Почтовый индекс">
+                                    <f:facet name="header">Zip Code</f:facet>
+                                    #{address.zipCode}
+                                </p:column>
+                                <p:column headerText="Город">
+                                    <f:facet name="header">ID города(локации)</f:facet>
+                                    <h:commandButton value="#{address.town.id}"
+                                                     action="#{productBean.loadLocationInfo(address.town.id)}"
+                                                     styleClass="btn btn-info btn-sm" />
+                                </p:column>
+                            </h:dataTable>
+
+                            <!-- Таблица с информацией о владельце (Person) -->
+                            <h:outputText value="Информация о владельце" rendered="#{not empty productBean.clickedPerson}" styleClass="h2 mt-4"/>
+                            <h:dataTable id="personTable" value="#{productBean.clickedPerson}" var="person"
+                                         rendered="#{not empty productBean.clickedPerson}"
+                                         styleClass="table table-striped table-bordered mt-3">
+                                <p:column headerText="ID">
+                                    <f:facet name="header">ID</f:facet>
+                                    #{person.id}
+                                </p:column>
+                                <p:column headerText="Имя">
+                                    <f:facet name="header">Имя</f:facet>
+                                    #{person.name}
+                                </p:column>
+                                <p:column headerText="Цвет глаз">
+                                    <f:facet name="header">Цвет глаз</f:facet>
+                                    #{person.eyeColor}
+                                </p:column>
+                                <p:column headerText="Цвет волос">
+                                    <f:facet name="header">Цвет волос</f:facet>
+                                    #{person.hairColor}
+                                </p:column>
+                                <p:column headerText="Локация">
+                                    <f:facet name="header">ID локации</f:facet>
+                                    <h:commandButton value="#{person.location.id}"
+                                                     action="#{productBean.loadLocationInfo(person.location.id)}"
+                                                     styleClass="btn btn-info btn-sm" />
+                                </p:column>
+                                <p:column headerText="Рост">
+                                    <f:facet name="header">Рост</f:facet>
+                                    #{person.height}
+                                </p:column>
+                                <p:column headerText="Вес">
+                                    <f:facet name="header">Вес</f:facet>
+                                    #{person.weight}
+                                </p:column>
+                                <p:column headerText="Паспорт ID">
+                                    <f:facet name="header">ИД паспорта</f:facet>
+                                    #{person.passportID}
+                                </p:column>
+                            </h:dataTable>
+
+                            <!-- Таблица с информацией о локации -->
+                            <h:outputText value="Информация о локации" rendered="#{not empty productBean.clickedLocation}" styleClass="h2 mt-4"/>
+                            <h:dataTable id="locationTable" value="#{productBean.clickedLocation}" var="location"
+                                         rendered="#{not empty productBean.clickedLocation}"
+                                         styleClass="table table-striped table-bordered mt-3">
+                                <p:column headerText="ID">
+                                    <f:facet name="header">ID</f:facet>
+                                    #{location.id}
+                                </p:column>
+                                <p:column headerText="Имя">
+                                    <f:facet name="header">Имя</f:facet>
+                                    #{location.name}
+                                </p:column>
+                                <p:column headerText="Координаты X">
+                                    <f:facet name="header">Координаты X</f:facet>
+                                    #{location.x}
+                                </p:column>
+                                <p:column headerText="Координаты Y">
+                                    <f:facet name="header">Координаты Y</f:facet>
+                                    #{location.y}
+                                </p:column>
+                                <p:column headerText="Координаты Z">
+                                    <f:facet name="header">Координаты Z</f:facet>
+                                    #{location.z}
+                                </p:column>
+                            </h:dataTable>
+
                         </div>
                     </p:tab>
 
                     <!-- Другие вкладки -->
+                    <!-- Вкладка Создать новый объект -->
                     <p:tab id="tabCreate" title="Создать новый объект">
                         <h:link value="Создать новый продукт" outcome="createProduct.xhtml"
                                 styleClass="btn btn-success" />
                     </p:tab>
+                    <!-- Вкладка Операции над объектами -->
+                    <p:tab id="tabOperations" title="Операции над объектами">
+                        <h:form>
+                            <!-- Панель для расчета суммы рейтингов -->
+                            <h:panelGrid columns="1" styleClass="mb-4">
+                                <h:commandButton value="Рассчитать сумму рейтингов"
+                                                 action="#{productBean.calculateTotalRating}"
+                                                 styleClass="btn btn-primary" />
 
-                    <!-- Вкладка получения информации по ID -->
-                    <p:tab id="tabInfo" title="Информация по ID">
-                        <div class="form-group">
-                            <h:outputLabel for="productId" value="Введите ID продукта" styleClass="form-label" />
-                            <h:inputText id="productId" value="#{productBean.productId}" required="true" styleClass="form-control" />
-                            <h:commandButton value="Получить информацию"
-                                             action="#{productBean.getProductById}"
-                                             styleClass="btn btn-info mt-2" />
-                        </div>
+                                <!-- Вывод суммы рейтингов только после вычисления -->
+                                <h:outputText value="Сумма рейтингов: #{productBean.totalRating}"
+                                              rendered="#{not empty productBean.totalRating}"
+                                              styleClass="mt-3" />
+                            </h:panelGrid>
+
+                            <!-- Панель для группировки по partNumber -->
+                            <h:panelGrid columns="1">
+                                <h:commandButton value="Группировать по partNumber"
+                                                 action="#{productBean.groupByPartNumber}"
+                                                 styleClass="btn btn-primary" />
+
+                                <!-- Отображение результатов группировки -->
+                                <h:dataTable value="#{productBean.groupedByPartNumber}" var="group" rendered="#{not empty productBean.groupedByPartNumber}" styleClass="table">
+                                    <!-- Заголовки таблицы -->
+                                    <h:column>
+                                        <f:facet name="header">PartNumber</f:facet>
+                                        #{group[0]}
+                                    </h:column>
+                                    <h:column>
+                                        <f:facet name="header">Количество</f:facet>
+                                        #{group[1]}
+                                    </h:column>
+                                </h:dataTable>
+
+                            </h:panelGrid>
+                            <!-- Панель для фильтрации по рейтингу -->
+                            <h:panelGrid columns="2" styleClass="mt-4">
+                                <h:outputLabel for="ratingThreshold" value="Введите минимальный рейтинг:" />
+                                <h:inputText id="ratingThreshold" value="#{productBean.ratingThreshold}"
+                                             validator="#{productBean.validateRating}"
+                                             converterMessage="Минимальный рейтинг должен быть числом"
+                                             class="form-control"/>
+                                <h:commandButton value="Фильтровать по рейтингу"
+                                                 action="#{productBean.filterProductsByRating}"
+                                                 styleClass="btn btn-primary" />
+                                <h:message for="ratingThreshold" styleClass="text-danger" />
+                            </h:panelGrid>
+                            <!-- Панель для фильтрации по цене -->
+                            <h:panelGrid columns="2" styleClass="mb-4">
+                                <h:outputLabel value="Минимальная цена" for="minPrice" />
+                                <h:inputText id="minPrice" value="#{productBean.minPrice}"
+                                             validator="#{productBean.validatePrice}"
+                                             converterMessage="Цена Должна быть числом"
+                                             class="form-control"/>
+
+
+                                <h:outputLabel value="Максимальная цена" for="maxPrice" />
+                                <h:inputText id="maxPrice" value="#{productBean.maxPrice}"
+                                             validator="#{productBean.validatePrice}"
+                                             converterMessage="Цена должна быть числом"
+                                             class="form-control"/>
+                                <h:commandButton value="Фильтровать по цене" action="#{productBean.filterProductsByPrice}" styleClass="btn btn-primary" />
+                                <h:message for="maxPrice" styleClass="text-danger" />
+                                <h:message for="minPrice" styleClass="text-danger" />
+                            </h:panelGrid>
+
+                            <!-- Отображение результатов фильтрации -->
+                            <h:dataTable value="#{productBean.filteredProducts}" var="product" rendered="#{not empty productBean.filteredProducts}" styleClass="table">
+                                <h:column>
+                                    <f:facet name="header">Product Name</f:facet>
+                                    #{product.name}
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Price</f:facet>
+                                    #{product.price}
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Rating</f:facet>
+                                    #{product.rating}
+                                </h:column>
+                            </h:dataTable>
+                            <!-- Форма для применения скидки -->
+                            <h:form id="discountForm">
+                                <h:panelGrid columns="2" styleClass="mb-4">
+                                    <h:outputLabel value="Процент скидки" for="discountPercentage" />
+                                    <h:inputText id="discountPercentage" value="#{productBean.discountPercentage}"
+                                                 validator="#{productBean.validateDiscountPercentage}"
+                                                 converterMessage="Процент должен быть числом"
+                                                 class="form-control"/>
+
+                                    <h:commandButton value="Применить скидку" action="#{productBean.applyDiscountToProducts}"
+                                                     styleClass="btn btn-primary" />
+                                    <h:message for="discountPercentage" styleClass="text-danger" />
+                                </h:panelGrid>
+
+
+                                <!-- Сообщение об успешной операции/ошибке -->
+                                <h:outputText value="#{productBean.opMessage}" rendered="#{not empty productBean.opMessage}"
+                                              styleClass="mt-3" style="color:#{productBean.opMessageStyle}" />
+                            </h:form>
+
+                        </h:form>
                     </p:tab>
 
 
-                    <!-- Новая вкладка -->
+
+                    <!-- Вкладка стать админом -->
                     <p:tab id="tabBecomeAdmin" title="Стать админом"
                            rendered="#{userBean.user.role eq 'USER'}">
                         <div class="text-center mt-4">
@@ -229,6 +458,7 @@
                         </div>
 
                     </p:tab>
+                    <!-- Вкладка управление заявками -->
                     <p:tab id="tabManageRequests" title="Управление заявками"
                            rendered="#{userBean.user.role eq 'ADMIN'}">
                         <h3>Заявки на становление администратором</h3>

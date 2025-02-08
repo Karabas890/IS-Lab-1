@@ -38,7 +38,7 @@ public class AddressValidator implements Validator {
             }
 
             // Проверка на наличие ID локации (Если town это объект, то проверяем его ID)
-            Integer locationId = (Integer) value;
+            Long locationId = (Long) value;
             if (locationId == null || locationId <= 0) {
                 throw new ValidatorException(new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,

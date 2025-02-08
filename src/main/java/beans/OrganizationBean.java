@@ -1,6 +1,7 @@
 package beans;
 
 import entities.Address;
+import entities.Coordinates;
 import entities.Organization;
 import enums.OrganizationType;
 import jakarta.enterprise.context.RequestScoped;
@@ -37,6 +38,7 @@ public class OrganizationBean implements Serializable {
             organizationService.save(organization);
             this.message = "Организация успешно сохранена!";
             this.messageStyle = "text-success";
+            organization = new Organization();  // Создаем новый объект, чтобы не обновлялся старый
         } catch (Exception e) {
             this.message = "Ошибка при сохранении организации: " + e.getMessage();
             this.messageStyle = "text-danger";
