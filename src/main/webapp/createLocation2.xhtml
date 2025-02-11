@@ -1,0 +1,74 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+   <h:head>
+      <title>Создание нового объекта Location</title>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+   </h:head>
+
+   <h:body class="container mt-5">
+      <!-- Включение информации о текущем пользователе -->
+      <ui:include src="userInfo.xhtml" styleClass="fixed-user-info"/>
+      <h:form id="createLocationForm" styleClass="needs-validation">
+         <h1 class="mb-4 text-center">Создание нового объекта Location</h1>
+
+         <!-- Поле для сообщения -->
+         <div class="mb-4">
+            <h:outputText value="#{locationBean.message}" styleClass="alert #{locationBean.messageStyle}" rendered="#{not empty locationBean.message}" />
+         </div>
+
+         <!-- Поле X -->
+         <div class="mb-3">
+            <label for="x" class="form-label">Координата X:</label>
+            <h:inputText id="x" value="#{locationBean.location.x}" converterMessage="X должен быть Int" class="form-control">
+               <f:validator validatorId="locationValidator" />
+               <f:attribute name="locationX" value="#{locationBean.location.x}" />
+            </h:inputText>
+            <h:message for="x" class="text-danger" />
+         </div>
+
+         <!-- Поле Y -->
+         <div class="mb-3">
+            <label for="y" class="form-label">Координата Y:</label>
+            <h:inputText id="y" value="#{locationBean.location.y}" converterMessage="Y должен быть Int" class="form-control">
+               <f:validator validatorId="locationValidator" />
+               <f:attribute name="locationY" value="#{locationBean.location.y}" />
+            </h:inputText>
+            <h:message for="y" class="text-danger" />
+         </div>
+
+         <!-- Поле Z -->
+         <div class="mb-3">
+            <label for="z" class="form-label">Координата Z:</label>
+            <h:inputText id="z" value="#{locationBean.location.z}" class="form-control" converterMessage="Z должен быть float">
+               <f:validator validatorId="locationValidator" />
+               <f:attribute name="locationZ" value="#{locationBean.location.z}" />
+            </h:inputText>
+            <h:message for="z" class="text-danger" />
+         </div>
+
+         <!-- Поле Name -->
+         <div class="mb-3">
+            <label for="name" class="form-label">Название:</label>
+            <h:inputText id="name" value="#{locationBean.location.name}" class="form-control" converterMessage="name должен быть String">
+               <f:validator validatorId="locationValidator" />
+               <f:attribute name="locationName" value="#{locationBean.location.name}" />
+            </h:inputText>
+            <h:message for="name" class="text-danger" />
+         </div>
+
+         <!-- Кнопки управления -->
+         <div class="d-flex justify-content-center">
+            <!-- Кнопка для сохранения -->
+            <h:commandButton value="Создать объект Location" action="#{locationBean.saveLocation}"
+                             styleClass="btn btn-success btn-lg me-3" />
+
+            <!-- Кнопка для возврата -->
+            <h:button value="Назад" outcome="createAddress.xhtml"
+                      styleClass="btn btn-secondary btn-lg" />
+         </div>
+      </h:form>
+   </h:body>
+</ui:composition>

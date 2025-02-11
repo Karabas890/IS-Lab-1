@@ -24,7 +24,9 @@
             <property name="eclipselink.logging.level" value="FINE" />
             <property name="eclipselink.ddl-generation" value="create-tables" />
             <property name="eclipselink.ddl-generation.output-mode" value="database" />
+            <!-- <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>-->
 
-        </properties>
-    </persistence-unit>
-</persistence>
+
+         </properties>
+     </persistence-unit>
+ </persistence>

@@ -35,7 +35,7 @@
             <label for="coordinates" class="form-label">Координаты:</label>
             <h:selectOneMenu id="coordinates" value="#{productBean.selectedCoordinates}" class="form-select" >
                <f:selectItems value="#{productBean.existingCoordinates}" var="coord"
-                              itemValue="#{coord.id}" itemLabel="#{coord.id}" />
+                              itemValue="#{coord.id}" itemLabel="#{coord}" />
                <f:validator validatorId="productValidator" />
             </h:selectOneMenu>
             <h:message for="coordinates" class="text-danger" />

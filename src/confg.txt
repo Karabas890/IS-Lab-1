@@ -1,0 +1,42 @@
+local:
+    pom.xml:
+<configuration>
+                    <hostname>localhost</hostname>
+                    <port>9990</port>
+                    <username>postgres</username>
+                    <password>12345678</password>
+                    <name>${project.artifactId}.war</name>
+                </configuration>
+       db.cnf:
+jakarta.persistence.jdbc.url = jdbc:postgresql://localhost:5432/studs
+jakarta.persistence.jdbc.password = 12345678
+jakarta.persistence.jdbc.user = postgres
+    persis.xml:
+ <!-- Параметры подключения -->
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/postgres"/>
+            <property name="javax.persistence.jdbc.user" value="postgres"/>
+            <property name="javax.persistence.jdbc.password" value="12345678"/>
+    socket:
+ var ws = new WebSocket("ws:/localhost:8080/InfSysLab1/websocket");
+ not local:
+pom.xml:
+<configuration>
+                    <hostname>localhost</hostname>
+                    <port>34550</port>
+                    <username>admin</username>
+                    <password>admin</password>
+                    <name>${project.artifactId}.war</name>
+                </configuration>
+       db.cnf:
+jakarta.persistence.jdbc.url = jdbc:postgresql://localhost:5432/studs
+jakarta.persistence.jdbc.password = ewh3RaCPpxM11LK3
+jakarta.persistence.jdbc.user = postgres
+    persis.xml:
+ <!-- Параметры подключения -->
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/postgres"/>
+            <property name="javax.persistence.jdbc.user" value="s368527"/>
+            <property name="javax.persistence.jdbc.password" value="ewh3RaCPpxM11LK3"/>
+    socket:
+ var ws = new WebSocket("ws:/localhost:32002/InfSysLab1/websocket");

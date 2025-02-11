@@ -1,81 +1,81 @@
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE, -- Уникальное имя пользователя
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL, -- Добавлено поле роли
-    request_admin_rights BOOLEAN DEFAULT FALSE -- Булево поле для запроса прав администратора
+                       id SERIAL PRIMARY KEY,
+                       username VARCHAR(255) NOT NULL UNIQUE, -- Уникальное имя пользователя
+                       password VARCHAR(255) NOT NULL,
+                       role VARCHAR(50) NOT NULL, -- Добавлено поле роли
+                       request_admin_rights BOOLEAN DEFAULT FALSE -- Булево поле для запроса прав администратора
 );
 
 CREATE TABLE location (
-    id SERIAL PRIMARY KEY,
-    x INTEGER NOT NULL,
-    y INTEGER NOT NULL,
-    z FLOAT,
-    name VARCHAR(255) NOT NULL
+                          id SERIAL PRIMARY KEY,
+                          x INTEGER NOT NULL,
+                          y INTEGER NOT NULL,
+                          z FLOAT,
+                          name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE address (
-    id SERIAL PRIMARY KEY,
-    zip_code VARCHAR(20) NOT NULL,
-    location_id INTEGER,
-    FOREIGN KEY (location_id) REFERENCES location (id)
+                         id SERIAL PRIMARY KEY,
+                         zip_code VARCHAR(20) NOT NULL,
+                         location_id INTEGER,
+                         FOREIGN KEY (location_id) REFERENCES location (id)
 );
 CREATE TABLE person (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    eye_color VARCHAR(50),
-    hair_color VARCHAR(50),
-    location_id INTEGER NOT NULL,
-    height FLOAT NOT NULL,
-    weight FLOAT,
-    passport_id VARCHAR(33) UNIQUE NOT NULL,
-    FOREIGN KEY (location_id) REFERENCES location (id)
+                        id SERIAL PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        eye_color VARCHAR(50),
+                        hair_color VARCHAR(50),
+                        location_id INTEGER NOT NULL,
+                        height FLOAT NOT NULL,
+                        weight FLOAT,
+                        passport_id VARCHAR(33) UNIQUE NOT NULL,
+                        FOREIGN KEY (location_id) REFERENCES location (id)
 );
 
 CREATE TABLE organization (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    address_id INTEGER,
-    annual_turnover FLOAT NOT NULL,
-    employees_count INTEGER NOT NULL,
-    full_name VARCHAR(255) NOT NULL,
-    rating DOUBLE PRECISION NOT NULL,
-    type VARCHAR(255),
-    FOREIGN KEY (address_id) REFERENCES address (id)
+                              id SERIAL PRIMARY KEY,
+                              name VARCHAR(255) NOT NULL,
+                              address_id INTEGER,
+                              annual_turnover FLOAT NOT NULL,
+                              employees_count INTEGER NOT NULL,
+                              full_name VARCHAR(255) NOT NULL,
+                              rating DOUBLE PRECISION NOT NULL,
+                              type VARCHAR(255),
+                              FOREIGN KEY (address_id) REFERENCES address (id)
 );
 
 CREATE TABLE coordinates (
-    id SERIAL PRIMARY KEY,
-    x DOUBLE PRECISION NOT NULL,
-    y BIGINT NOT NULL
+                             id SERIAL PRIMARY KEY,
+                             x DOUBLE PRECISION NOT NULL,
+                             y BIGINT NOT NULL
 );
 
 CREATE TABLE product (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL,
-    coordinates_id INTEGER NOT NULL,
-    creation_date DATE NOT NULL DEFAULT CURRENT_DATE,
-    unit_of_measure VARCHAR(50),
-    manufacturer_id INTEGER,
-    price INTEGER NOT NULL,
-    manufacture_cost INTEGER NOT NULL,
-    rating FLOAT NOT NULL,
-    part_number VARCHAR(67),
-    owner_id INTEGER NOT NULL,
-    FOREIGN KEY (coordinates_id) REFERENCES coordinates (id),
-    FOREIGN KEY (manufacturer_id) REFERENCES organization (id),
-    FOREIGN KEY (owner_id) REFERENCES person (id),
-    FOREIGN KEY (user_id) REFERENCES users (id) -- Связь с таблицей пользователей
+                         id SERIAL PRIMARY KEY,
+                         name VARCHAR(255) UNIQUE NOT NULL,
+                         coordinates_id INTEGER NOT NULL,
+                         creation_date DATE NOT NULL DEFAULT CURRENT_DATE,
+                         unit_of_measure VARCHAR(50),
+                         manufacturer_id INTEGER,
+                         price INTEGER NOT NULL,
+                         manufacture_cost INTEGER NOT NULL,
+                         rating FLOAT NOT NULL,
+                         part_number VARCHAR(67),
+                         owner_id INTEGER NOT NULL,
+                         user_id INTEGER NOT NULL,
+                         FOREIGN KEY (coordinates_id) REFERENCES coordinates (id),
+                         FOREIGN KEY (manufacturer_id) REFERENCES organization (id),
+                         FOREIGN KEY (owner_id) REFERENCES person (id),
+                         FOREIGN KEY (user_id) REFERENCES users (id) -- Связь с таблицей пользователей
 );
 CREATE TABLE product_history (
-    id BIGINT SERIAL PRIMARY KEY,                -- Уникальный идентификатор записи
-    product_id BIGINT NOT NULL,                           -- Идентификатор продукта
-    user_id BIGINT NOT NULL,                              -- Идентификатор пользователя, выполнившего операцию
-    operation_type VARCHAR(50) NOT NULL,                  -- Тип операции (CREATE, UPDATE, DELETE)
-    operation_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Дата и время операции
-    comment VARCHAR(255),                                 -- Комментарий (по желанию)
-    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE, -- Связь с таблицей продуктов
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE    -- Связь с таблицей пользователей
+                                 id SERIAL PRIMARY KEY,                -- Уникальный идентификатор записи
+                                 product_id BIGINT NOT NULL,                           -- Идентификатор продукта
+                                 user_id BIGINT NOT NULL,                              -- Идентификатор пользователя, выполнившего операцию
+                                 operation_type VARCHAR(50) NOT NULL,                  -- Тип операции (CREATE, UPDATE, DELETE)
+                                 operation_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- Дата и время операции
+                                 comment VARCHAR(255),                                 -- Комментарий (по желанию)
+                                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE    -- Связь с таблицей пользователей
 );
 
 -- Индексы для быстрого поиска по полям product_id и user_id

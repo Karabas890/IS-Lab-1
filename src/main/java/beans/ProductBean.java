@@ -223,10 +223,20 @@ public class ProductBean implements Serializable {
 
     // Удаление продукта
     public void deleteProduct(long id) {
-        productService.delete(id);
         // Присваиваем текущего пользователя
-        //User currentUser = userBean.getCurrentUser();
-        //productService.createHistory(product,currentUser,"DELETE");
+        System.out.println("deleteProduct");
+        Product product=productService.findById(id);
+        if (product== null) {
+            System.out.println("deleteProduct: product is null");
+        }else {
+            System.out.println("deleteProduct: product is not null");
+            // if (currentUser != null) {
+            //    product.setUser(currentUser);
+            // }
+            User currentUser = userBean.getCurrentUser();
+            productService.createHistory(product, currentUser, "DELETE");
+            productService.delete(id);
+        }
     }
 
 
@@ -294,7 +304,7 @@ public class ProductBean implements Serializable {
 
             // Сохраняем продукт
             productService.save(product);
-            //productService.createHistory(product,currentUser,"CREATE");
+            productService.createHistory(product,currentUser,"CREATE");
             product = new Product();  // Создаем новый объект, чтобы не обновлялся старый
 
 
@@ -308,10 +318,11 @@ public class ProductBean implements Serializable {
         try {
 
 
+
             // Сохраняем обновленный продукт через сервис
             productService.update(selectedProduct);
-            // User currentUser = userBean.getCurrentUser();
-            //productService.createHistory(product,currentUser,"UPDATE");
+            User currentUser = userBean.getCurrentUser();
+            productService.createHistory(selectedProduct,currentUser,"UPDATE");
 
             // Устанавливаем сообщение об успешном обновлении
             setMessage("Продукт успешно обновлен!", "alert-success");
@@ -552,6 +563,7 @@ public class ProductBean implements Serializable {
         }
     }
     public void loadProducts() {
+        System.out.println("loadProducts");
         productList = productService.findAll().stream()
                 .filter(product -> nameFilter == null || nameFilter.isEmpty() || product.getName().toLowerCase().contains(nameFilter.toLowerCase()))
                 .filter(product -> partNumberFilter == null || partNumberFilter.isEmpty() || product.getPartNumber().equalsIgnoreCase(partNumberFilter))
@@ -561,21 +573,27 @@ public class ProductBean implements Serializable {
         updatePaginatedProducts();
     }
     private void updatePaginatedProducts() {
+        //System.out.println("updatePaginatedProducts");
         int fromIndex = (currentPage - 1) * rowsPerPage;
         int toIndex = Math.min(fromIndex + rowsPerPage, totalRows);
         paginatedProducts = productList.subList(fromIndex, toIndex);
+        System.out.println("updatePaginatedProducts, paginatedProducts:" + paginatedProducts);
     }
     public void previousPage() {
+
         if (currentPage > 1) {
             currentPage--;
             updatePaginatedProducts();
         }
+        System.out.println("previousPage, currentPage"+ currentPage);
     }
     public void nextPage() {
+       // System.out.println("nextPage");
         if (currentPage < getTotalPages()) {
             currentPage++;
             updatePaginatedProducts();
         }
+        System.out.println("nextPage, currentPage"+ currentPage);
     }
     public int getTotalPages() {
         return (int) Math.ceil((double) totalRows / rowsPerPage);

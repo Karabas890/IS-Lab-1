@@ -212,7 +212,7 @@
                                     <h:commandButton value="Previous" action="#{productBean.previousPage}"
                                                      disabled="#{productBean.currentPage == 1}"
                                                      styleClass="btn btn-dark btn-sm mx-2">
-                                        <f:ajax execute="@this" render="dataTableId paginationInfo paginationId paginationControls"/>
+                                        <f:ajax execute="@this" render="objectTable paginationInfo paginationId paginationControls"/>
                                     </h:commandButton>
 
                                     <span id="paginationInfo" class="mx-2">Page #{productBean.currentPage} of #{productBean.totalPages}</span>
@@ -220,7 +220,7 @@
                                     <h:commandButton value="Next" action="#{productBean.nextPage}"
                                                      disabled="#{productBean.currentPage == productBean.totalPages}"
                                                      styleClass="btn btn-dark btn-sm mx-2">
-                                        <f:ajax execute="@this" render="dataTableId paginationInfo paginationId paginationControls"/>
+                                        <f:ajax execute="@this" render="objectTable paginationInfo paginationId paginationControls"/>
                                     </h:commandButton>
                                 </h:panelGroup>
                             </div>

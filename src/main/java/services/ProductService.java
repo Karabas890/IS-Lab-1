@@ -58,7 +58,7 @@ public class ProductService implements Serializable{
         } else {
             entityManager.merge(product);   // Существующий объект -> merge
             DataWebSocket.broadcast("save product "+product.getName());
-            DataWebSocket.broadcast("save product " + product.getName());
+            //DataWebSocket.broadcast("save product " + product.getName());
         }
     }
 
@@ -74,18 +74,26 @@ public class ProductService implements Serializable{
     // Метод для записи в историю изменений
     @Transactional
     public void createHistory(Product product, User user, String operationType) {
-        // ✅ Загружаем product из базы, если он ещё не сохранён
-        if (product.getId() != null) {
+        // Загружаем product из базы, если он ещё не сохранён
+       /* if (product.getId() != null) {
+            System.out.println("createHistory: do merge");
             product = entityManager.merge(product);
         } else {
+            System.out.println("createHistory: do persist");
             entityManager.persist(product);
         }
-        ProductHistory productHistory = new ProductHistory();
-        productHistory.setProduct(product);
-        productHistory.setUser(user);
-        productHistory.setOperationType(operationType);
-        productHistory.setOperationDate(new Date()); // Устанавливаем текущую дату
-        entityManager.persist(productHistory); // Сохраняем историю
+        */
+        if (product.getId() == null) {
+            System.out.println("createHistory: product is null");
+        }else {
+            System.out.println("createHistory: product is not null");
+            ProductHistory productHistory = new ProductHistory();
+            productHistory.setProductId(product.getId());
+            productHistory.setUser(user);
+            productHistory.setOperationType(operationType);
+            productHistory.setOperationDate(new Date()); // Устанавливаем текущую дату
+            entityManager.persist(productHistory); // Сохраняем историю
+        }
     }
 
     // Проверка на связанные объекты перед удалением
