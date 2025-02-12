@@ -412,10 +412,18 @@ public class ProductBean implements Serializable {
     }
     // Метод для фильтрации продуктов по диапазону цен
     public void filterProductsByPrice() {
-        if (minPrice != null && maxPrice != null && minPrice <= maxPrice) {
+        if (minPrice != null && maxPrice != null) {
+            if (minPrice > maxPrice) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Максимальная цена не может быть меньше минимальной",
+                                "Максимальная цена не может быть меньше минимальной"));
+                return; // Прерываем выполнение метода
+            }
             filteredProducts = productService.getProductsInPriceRange(minPrice, maxPrice);
         }
     }
+
     // Метод для применения скидки ко всем продуктам или продуктам, принадлежащим пользователю
     public void applyDiscountToProducts() {
         if (discountPercentage == null || discountPercentage <= 0 || discountPercentage > 100) {

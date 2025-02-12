@@ -72,7 +72,11 @@
                          validator="#{productBean.validatePrice}"
                          converterMessage="Цена должна быть числом"
                          class="form-control"/>
-            <h:commandButton value="Фильтровать по цене" action="#{productBean.filterProductsByPrice}" styleClass="btn btn-primary" />
+            <h:commandButton id="filterButton" value="Фильтровать по цене"
+                             action="#{productBean.filterProductsByPrice}"
+                             styleClass="btn btn-primary" />
+            <h:messages styleClass="text-danger" showSummary="true" showDetail="false"
+                        errorStyle="color:red;" infoStyle="display:none;" warnStyle="display:none;" fatalStyle="color:red;" />
             <h:message for="maxPrice" styleClass="text-danger" />
             <h:message for="minPrice" styleClass="text-danger" />
         </h:panelGrid>
