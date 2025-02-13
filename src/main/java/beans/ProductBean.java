@@ -10,6 +10,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.validator.ValidatorException;
 import jakarta.faces.view.ViewScoped;
 import jakarta.resource.spi.work.SecurityContext;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.model.file.UploadedFile;
@@ -69,6 +70,8 @@ public class ProductBean implements Serializable {
     private Product product = new Product();
     @Inject
     private UserBean userBean;
+    @Inject
+    private ErrorBean errorBean;
 
     private boolean useExistingCoordinates;
     private boolean useExistingOrganization;
@@ -241,6 +244,7 @@ public class ProductBean implements Serializable {
         Product product=productService.findById(id);
         if (product== null) {
             System.out.println("deleteProduct: product is null");
+            errorBean.sendError();
         }else {
             System.out.println("deleteProduct: product is not null");
             // if (currentUser != null) {
@@ -303,11 +307,15 @@ public class ProductBean implements Serializable {
 
     public void saveProduct() {
         try {
+            // Проверка на уникальность partNumber
+            if (productService.isPartNumberExists(product.getPartNumber())) {
+                throw new IllegalArgumentException("Ошибка: продукт с таким PartNumber уже существует!"); // Бросаем исключение
+            }
 
+            // Устанавливаем значения для продукта
             product.setCoordinates(coordinatesService.findById(selectedCoordinates));
             product.setManufacturer(organizationService.findById(selectedOrganization));
             product.setOwner(personService.findById(selectedPerson));
-
 
             // Присваиваем текущего пользователя
             User currentUser = userBean.getCurrentUser();
@@ -317,16 +325,25 @@ public class ProductBean implements Serializable {
 
             // Сохраняем продукт
             productService.save(product);
-            productService.createHistory(product,currentUser,"CREATE");
-            product = new Product();  // Создаем новый объект, чтобы не обновлялся старый
+            productService.createHistory(product, currentUser, "CREATE");
 
+            // Очищаем текущий продукт для нового ввода
+            product = new Product();
 
             // Устанавливаем сообщение об успехе
             setMessage("Продукт успешно создан!", "alert-success");
+
+        } catch (IllegalArgumentException e) {
+            // Обрабатываем исключение, показывая сообщение о ошибке
+            errorBean.sendError();
+            setMessage(e.getMessage(), "alert-danger");
         } catch (Exception e) {
+            // Общая обработка других исключений
+            errorBean.sendError();
             setMessage("Ошибка при создании продукта: " + e.getMessage(), "alert-danger");
         }
     }
+
     public void updateEditProduct() {
         try {
 
@@ -618,6 +635,10 @@ public class ProductBean implements Serializable {
     }
     public void importProducts()  {
         System.out.println("importProducts uploadedFile: "+ file);
+        ImportHistory importEntry = new ImportHistory();
+        importEntry.setStatus("IN_PROGRESS");
+        User currentUser = userBean.getCurrentUser();
+        importEntry.setUsername(currentUser.getUsername());
         if (file == null || file.getSize() == 0) {
             System.out.println("importProducts uploadedFile is null:");
             FacesContext.getCurrentInstance().addMessage(null,
@@ -641,10 +662,11 @@ public class ProductBean implements Serializable {
            BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
             file = null;
             List<Product> products = productService.parseCsv(reader);
-            User currentUser = userBean.getCurrentUser();
+            Integer addedCount=0;
 
             if (currentUser != null) {
                 for (Product product : products) {
+                    addedCount++;
                     product.setUser(currentUser);
 
                     // Сначала сохраняем Coordinates, если есть
@@ -685,15 +707,23 @@ public class ProductBean implements Serializable {
 
             // После того, как все вложенные объекты сохранены, сохраняем продукты
             productService.importProducts(products);
-
+            importEntry.setStatus("SUCCESS");
+            importEntry.setCountAdded(addedCount);
+            productService.saveImportHistory(importEntry);
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Импорт успешно завершен!", null));
         } catch (IllegalArgumentException e) {
             file = null;
+            importEntry.setStatus("FAILED");
+            productService.saveImportHistory(importEntry);
+            errorBean.sendError();
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка в данных: " + e.getMessage(), null));
         } catch (Exception e) {
             file = null;
+            importEntry.setStatus("FAILED");
+            productService.saveImportHistory(importEntry);
+            errorBean.sendError();
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка импорта: " + e.getMessage(), null));
         }

@@ -147,11 +147,13 @@ public class ProductService implements Serializable{
         seenPartNumbers = new HashSet<>();  // Для хранения уникальных PartNumber
         List<Product> products = new ArrayList<>();
         List<String> lines = reader.lines().collect(Collectors.toList());
+        System.out.println("parseCsv");
 
         int lineNumber = 1; // Для вывода номера строки в случае ошибки
 
         for (String line : lines) {
             String[] values = line.split(";"); // или ","
+            System.out.println("parseCsv, values:"+values.length);
             if (values.length < 29) {
                 throw new IllegalArgumentException("Ошибка: строка " + lineNumber + " содержит недостаточно данных.");
                 //continue;
@@ -392,27 +394,31 @@ public class ProductService implements Serializable{
 
     @Transactional
     public void importProducts(List<Product> products) {
-        ImportHistory importEntry = new ImportHistory();
-        importEntry.setStatus("IN_PROGRESS");
-        importEntry.setUsername(userService.getCurrentUserName());
-        Integer addedCount=0;
+        //ImportHistory importEntry = new ImportHistory();
+        //importEntry.setStatus("IN_PROGRESS");
+        //importEntry.setUsername(userService.getCurrentUserName());
+        //Integer addedCount=0;
         try {
             for (Product product : products) {
                 entityManager.persist(product);
-                addedCount++;
+                //addedCount++;
                 createHistory(product,product.getUser(),"IMPORT");
             }
-            importEntry.setStatus("SUCCESS");
-            importEntry.setCountAdded(addedCount);
-            entityManager.merge(importEntry);
+           // importEntry.setStatus("SUCCESS");
+            //importEntry.setCountAdded(addedCount);
+           // entityManager.merge(importEntry);
             DataWebSocket.broadcast("importProducts");
         } catch (Exception e) {
-            importEntry.setStatus("FAILED");
-            entityManager.merge(importEntry);
+            //importEntry.setStatus("FAILED");
             DataWebSocket.broadcast("importProducts");
             throw new RuntimeException("Ошибка при сохранении продуктов: " + e.getMessage());
         }
     }
+    @Transactional
+    public void saveImportHistory(ImportHistory importEntry) {
+        entityManager.merge(importEntry);
+    }
+
     public List<ImportHistory> getAllImportHistory() {
         return entityManager.createQuery("SELECT i FROM ImportHistory i ORDER BY i.id DESC", ImportHistory.class)
                 .getResultList();

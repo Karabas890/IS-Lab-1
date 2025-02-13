@@ -189,19 +189,21 @@
                                         Actions
                                     </f:facet>
                                     <div class="btn-group">
-                                        <!-- Кнопка "Редактировать" доступна только для текущего пользователя -->
+                                        <!-- Кнопка "Редактировать" -->
                                         <h:commandLink value="Редактировать"
                                                        action="#{productBean.editProduct(product.id)}"
                                                        styleClass="btn btn-primary btn-sm btn-action"
-                                                       rendered="#{product.user.username == userBean.user.username or userBean.user.role eq 'ADMIN'}" />
+                                                       rendered="#{product.user.username == userBean.user.username or userBean.user.role eq 'ADMIN'}">
+                                            <f:ajax execute="@this" render="@form" />
+                                        </h:commandLink>
 
-                                        <!-- Кнопка "Удалить" доступна только для текущего пользователя -->
+                                        <!-- Кнопка "Удалить" с AJAX -->
                                         <h:commandLink value="Удалить"
                                                        action="#{productBean.deleteProduct(product.id)}"
-                                                       process="@form"
-                                                       update="@form"
                                                        styleClass="btn btn-danger btn-sm btn-action"
-                                                       rendered="#{product.user.username == userBean.user.username or userBean.user.role eq 'ADMIN'}" />
+                                                       rendered="#{product.user.username == userBean.user.username or userBean.user.role eq 'ADMIN'}">
+                                            <f:ajax execute="@this" render="@form" />
+                                        </h:commandLink>
                                     </div>
                                 </p:column>
                             </h:dataTable>
