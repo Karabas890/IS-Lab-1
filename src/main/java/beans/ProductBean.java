@@ -12,18 +12,22 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.resource.spi.work.SecurityContext;
 import lombok.Getter;
 import lombok.Setter;
+import org.primefaces.model.file.UploadedFile;
 import services.*;
 import enums.UnitOfMeasure;
 import enums.OrganizationType;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 import jakarta.inject.Inject;
-import java.io.Serializable;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.servlet.http.Part;
 
 @Named
 @SessionScoped
@@ -38,11 +42,13 @@ public class ProductBean implements Serializable {
     private String messageStyle;
     private String opMessageStyle;
 
+
     //@Inject
     //private SecurityContext securityContext; // Введение SecurityContext для получения текущего пользователя
 
     @Inject
     private ProductService productService;
+    private UploadedFile uploadedFile;
 
     @Inject
     private CoordinatesService coordinatesService;
@@ -104,6 +110,13 @@ public class ProductBean implements Serializable {
     private int currentPage = 1; // Текущая страница
     private int rowsPerPage = 5; // Количество строк на страницу
     private int totalRows; // Общее количество строк
+    // Переменные для пагинации истории импорта
+    private List<ImportHistory> paginatedImportHistory; // История импорта на текущей странице
+    private int importCurrentPage = 1; // Текущая страница для истории импорта
+    private int importRowsPerPage = 5; // Количество строк на страницу
+    private int importTotalRows; // Общее количество записей в истории импорта
+    private Part file;
+    private List<ImportHistory> importHistory;
     @PostConstruct
     public void init() {
         product = new Product();
@@ -602,6 +615,152 @@ public class ProductBean implements Serializable {
             updatePaginatedProducts();
         }
         System.out.println("nextPage, currentPage"+ currentPage);
+    }
+    public void importProducts()  {
+        System.out.println("importProducts uploadedFile: "+ file);
+        if (file == null || file.getSize() == 0) {
+            System.out.println("importProducts uploadedFile is null:");
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Выберите файл(не пустой) для импорта!", null));
+            return;  // Выход из метода, если файл не выбран
+        }
+        // Проверка расширения файла
+        //String fileName = file.getName();
+       // if (!fileName.toLowerCase().endsWith(".csv")) {
+           // FacesContext.getCurrentInstance().addMessage(null,
+                 //   new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка: выберите файл с расширением .csv!", null));
+          //  return;
+       // }
+        System.out.println("importProducts uploadedFile is not null:");
+        try {
+            //InputStream fileContent = uploadedFile.getInputStream();
+             //Преобразуем InputStream в строку
+            //BufferedReader reader = new BufferedReader(new InputStreamReader(fileContent),StandardCharsets.UTF_8);
+            //StringBuilder fileContentStr = new StringBuilder();
+            //String line;
+           BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
+            file = null;
+            List<Product> products = productService.parseCsv(reader);
+            User currentUser = userBean.getCurrentUser();
+
+            if (currentUser != null) {
+                for (Product product : products) {
+                    product.setUser(currentUser);
+
+                    // Сначала сохраняем Coordinates, если есть
+                    if (product.getCoordinates() != null) {
+                        coordinatesService.save(product.getCoordinates());
+                    }
+
+                    // Сохранение Organization и его зависимостей
+                    if (product.getManufacturer() != null) {
+                        Organization organization = product.getManufacturer();
+
+                        // Если есть Address у Organization, сначала сохраняем его
+                        if (organization.getOfficialAddress() != null) {
+                            Address savedAddress = organization.getOfficialAddress();
+                            // Если есть Location у Adress, сначала сохраняем его
+                            if (savedAddress.getTown() != null) {
+                                locationService.save(savedAddress.getTown());
+                            }
+                            addressService.save(organization.getOfficialAddress());
+                        }
+
+                        organizationService.save(organization);
+                    }
+
+                    // Сохранение Person и его зависимостей
+                    if (product.getOwner() != null) {
+                        Person owner = product.getOwner();
+
+                        // Если у владельца есть Location, сначала сохраняем его
+                        if (owner.getLocation() != null) {
+                            locationService.save(owner.getLocation());
+                        }
+
+                        personService.save(owner);
+                    }
+                }
+            }
+
+            // После того, как все вложенные объекты сохранены, сохраняем продукты
+            productService.importProducts(products);
+
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Импорт успешно завершен!", null));
+        } catch (IllegalArgumentException e) {
+            file = null;
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка в данных: " + e.getMessage(), null));
+        } catch (Exception e) {
+            file = null;
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка импорта: " + e.getMessage(), null));
+        }
+    }
+    private void loadImportHistory() {
+        if  (Role.ADMIN.equals(userBean.getCurrentUser().getRole())) {
+            importHistory = productService.getAllImportHistory();
+        } else {
+            importHistory = productService.getUserImportHistory(userBean.getUser().getUsername());
+        }
+        importTotalRows = importHistory.size();
+        updatePaginatedImportHistory();
+    }
+    // Обновление списка истории импорта для текущей страницы
+    private void updatePaginatedImportHistory() {
+        int fromIndex = (importCurrentPage - 1) * importRowsPerPage;
+        int toIndex = Math.min(fromIndex + importRowsPerPage, importTotalRows);
+        paginatedImportHistory = importHistory.subList(fromIndex, toIndex);
+    }
+
+    // Методы для переключения страниц
+    public void previousImportPage() {
+        if (importCurrentPage > 1) {
+            importCurrentPage--;
+            updatePaginatedImportHistory();
+        }
+    }
+
+    public void nextImportPage() {
+        if (importCurrentPage < getImportTotalPages()) {
+            importCurrentPage++;
+            updatePaginatedImportHistory();
+        }
+    }
+
+    // Геттеры
+    public List<ImportHistory> getPaginatedImportHistory() {
+        loadImportHistory(); // Загружаем свежие данные из БД
+        return paginatedImportHistory;
+    }
+    public int getImportTotalPages() {
+        return (int) Math.ceil((double) importTotalRows / importRowsPerPage);
+    }
+
+    public int getImportCurrentPage() {
+        return importCurrentPage;
+    }
+
+    public List<ImportHistory> getImportHistory() {
+        loadImportHistory();
+        return importHistory;
+
+    }
+    public void setImportHistory( List<ImportHistory> importHistory) {
+         this.importHistory=importHistory;
+    }
+
+
+
+    public UploadedFile getUploadedFile() {
+        System.out.println("getUploadedFile: "+uploadedFile);
+        return uploadedFile;
+    }
+
+    public void setUploadedFile(UploadedFile uploadedFile) {
+        this.uploadedFile = uploadedFile;
+        System.out.println("setUploadedFile: "+uploadedFile);
     }
     public int getTotalPages() {
         return (int) Math.ceil((double) totalRows / rowsPerPage);

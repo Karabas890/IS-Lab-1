@@ -40,3 +40,4 @@ jakarta.persistence.jdbc.user = postgres
             <property name="javax.persistence.jdbc.password" value="ewh3RaCPpxM11LK3"/>
     socket:
  var ws = new WebSocket("ws:/localhost:32002/InfSysLab1/websocket");
+ name;price;manufactureCost;rating;partNumber;unitOfMeasure;x;y;organizationName;annualTurnover;employeesCount;fullName;type;zipCode;xLocation;yLocation;zLocation;townName;ownerName;height;weight;passportID;eyeColor;hairColor;xOwnerLocation;yOwnerLocation;zOwnerLocation;ownerLocationName
