@@ -124,7 +124,7 @@
 
          <!-- Кнопки управления -->
          <div class="d-flex justify-content-center">
-            <h:commandButton value="Создать продукт" action="#{productBean.saveProduct}" styleClass="btn btn-success btn-lg me-3">
+            <h:commandButton id="createProductBtn" value="Создать продукт" action="#{productBean.saveProduct}" styleClass="btn btn-success btn-lg me-3">
                <f:ajax execute="@form" render="@form" />
             </h:commandButton>
 

@@ -44,7 +44,7 @@
             <h:inputSecret id="password" value="#{userBean.password}" class="form-control" required="true" requiredMessage="Password is required."/>
 
             <h:outputText value="" /> <!-- Empty cell for layout -->
-            <h:commandButton value="Login" action="#{userBean.login}" class="btn btn-primary btn-block center-button"/>
+            <h:commandButton id="loginBtn" value="Login" action="#{userBean.login}" class="btn btn-primary btn-block center-button"/>
         </h:panelGrid>
         <h:messages globalOnly="true" layout="table" style="color: red;" />
         <span class="switch-link" onclick="showRegistrationForm()">Нет аккаунта? Зарегистрируйтесь</span>

@@ -87,7 +87,7 @@
                                 <p:column headerText="ID">
                                     <f:facet name="header">
                                         Id
-                                        <h:commandButton value="#{productBean.sortOrderId ? '↓' : '↑'}"
+                                        <h:commandButton id="sortIdBtn" value="#{productBean.sortOrderId ? '↓' : '↑'}"
                                                          action="#{productBean.sortById}">
                                             <f:ajax execute="@form" render="objectTable"/>
                                         </h:commandButton>
@@ -97,7 +97,7 @@
                                 <p:column headerText="Название">
                                     <f:facet name="header">
                                         Name
-                                        <h:commandButton value="#{productBean.sortOrderName ? '↓' : '↑'}"
+                                        <h:commandButton id="sortNameBtn" value="#{productBean.sortOrderName ? '↓' : '↑'}"
                                                          action="#{productBean.sortByName}">
                                             <f:ajax execute="@form" render="objectTable"/>
                                         </h:commandButton>
@@ -190,7 +190,7 @@
                                     </f:facet>
                                     <div class="btn-group">
                                         <!-- Кнопка "Редактировать" -->
-                                        <h:commandLink value="Редактировать"
+                                        <h:commandLink id="editLink" value="Редактировать"
                                                        action="#{productBean.editProduct(product.id)}"
                                                        styleClass="btn btn-primary btn-sm btn-action"
                                                        rendered="#{product.user.username == userBean.user.username or userBean.user.role eq 'ADMIN'}">
@@ -198,7 +198,7 @@
                                         </h:commandLink>
 
                                         <!-- Кнопка "Удалить" с AJAX -->
-                                        <h:commandLink value="Удалить"
+                                        <h:commandLink id="deleteLink" value="Удалить"
                                                        action="#{productBean.deleteProduct(product.id)}"
                                                        styleClass="btn btn-danger btn-sm btn-action"
                                                        rendered="#{product.user.username == userBean.user.username or userBean.user.role eq 'ADMIN'}">

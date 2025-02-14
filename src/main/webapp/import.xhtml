@@ -33,9 +33,9 @@
 
             <br/>
 
-            <h:form enctype="multipart/form-data">
+            <h:form id="importForm" name="importForm" enctype="multipart/form-data" >
                 <h:inputFile id="inputFile" value="#{productBean.file}" />
-                <h:commandButton value="Импорт" action="#{productBean.importProducts}" styleClass="btn btn-primary">
+                <h:commandButton id="importBtn" name="importBtn" value="Импорт" action="#{productBean.importProducts}" styleClass="btn btn-primary">
                 </h:commandButton>
                 <br/>
                 <h:messages styleClass="text-danger" showSummary="true" showDetail="false"
