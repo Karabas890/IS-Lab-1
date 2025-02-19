@@ -2,7 +2,9 @@ package beans;
 
 import entities.*;
 import enums.Role;
+import io.minio.errors.ErrorResponseException;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.component.UIComponent;
@@ -11,6 +13,7 @@ import jakarta.faces.validator.ValidatorException;
 import jakarta.faces.view.ViewScoped;
 import jakarta.resource.spi.work.SecurityContext;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.UserTransaction;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.model.file.UploadedFile;
@@ -22,6 +25,7 @@ import jakarta.inject.Named;
 import jakarta.inject.Inject;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +33,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import jakarta.servlet.http.Part;
+import io.minio.*;
+import java.nio.file.Paths;
 
 @Named
 @SessionScoped
@@ -120,10 +126,39 @@ public class ProductBean implements Serializable {
     private int importTotalRows; // Общее количество записей в истории импорта
     private Part file;
     private List<ImportHistory> importHistory;
+    @Resource
+    private UserTransaction utx;
+    private final MinioClient minioClient;
+    private final String bucketName = "import-files";
+    public ProductBean() {
+        this.minioClient = MinioClient.builder()
+                .endpoint("http://localhost:9000")
+                .credentials("minioadmin", "minioadmin")
+                .build();
+    }
+
     @PostConstruct
     public void init() {
         product = new Product();
         unitOfMeasureValues = Arrays.asList(UnitOfMeasure.values()); // Assuming UnitOfMeasure is an Enum
+        try {
+            boolean found = minioClient.bucketExists(
+                    BucketExistsArgs.builder().bucket(bucketName).build()
+            );
+
+            if (!found) {
+                minioClient.makeBucket(
+                        MakeBucketArgs.builder().bucket(bucketName).build()
+                );
+                System.out.println("Bucket " + bucketName + " was created in MinIO.");
+            } else {
+                System.out.println("Bucket " + bucketName + " already exists.");
+            }
+        } catch (Exception e) {
+            System.err.println("⚠️ Warning: MinIO is unavailable. Bucket check failed: " + e.getMessage());
+//            FacesContext.getCurrentInstance().addMessage(null,
+//                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Warning! File storage is not available!", null));
+        }
 
     }
 
@@ -634,9 +669,11 @@ public class ProductBean implements Serializable {
         System.out.println("nextPage, currentPage"+ currentPage);
     }
     public void importProducts()  {
+
         System.out.println("importProducts uploadedFile: "+ file);
         ImportHistory importEntry = new ImportHistory();
         importEntry.setStatus("IN_PROGRESS");
+        String objectPath = "imports/" + importEntry.getId() + ".csv";
         User currentUser = userBean.getCurrentUser();
         importEntry.setUsername(currentUser.getUsername());
         if (file == null || file.getSize() == 0) {
@@ -660,8 +697,8 @@ public class ProductBean implements Serializable {
             //StringBuilder fileContentStr = new StringBuilder();
             //String line;
            BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
-            file = null;
             List<Product> products = productService.parseCsv(reader);
+            String fileName = Paths.get(file.getSubmittedFileName()).getFileName().toString();
             Integer addedCount=0;
 
             if (currentUser != null) {
@@ -706,12 +743,36 @@ public class ProductBean implements Serializable {
             }
 
             // После того, как все вложенные объекты сохранены, сохраняем продукты
-            productService.importProducts(products);
+                utx.begin();
+                productService.importProducts(products);
+                try (InputStream inputStream = file.getInputStream()) {
+                    minioClient.putObject(
+                            PutObjectArgs.builder()
+                                    .bucket(bucketName)
+                                    .object(objectPath)
+                                    .stream(inputStream, file.getSize(), -1)
+                                    .contentType("application/octet-stream")
+                                    .build()
+                    );
+                }
+                utx.commit();
+
             importEntry.setStatus("SUCCESS");
             importEntry.setCountAdded(addedCount);
             productService.saveImportHistory(importEntry);
+            file = null;
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Импорт успешно завершен!", null));
+        }catch (ConnectException e) {
+            try {
+                utx.rollback();
+            } catch (Exception rollbackEx) {
+                System.err.println("Error during transactional rollback: " + rollbackEx.getMessage());
+            }
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error occurred: File storage is not available.", null));
+            System.out.println("Error occurred: " + e.getMessage() + " class: " + e.getClass());
+            errorBean.sendError();
         } catch (IllegalArgumentException e) {
             file = null;
             importEntry.setStatus("FAILED");
@@ -726,6 +787,43 @@ public class ProductBean implements Serializable {
             errorBean.sendError();
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка импорта: " + e.getMessage(), null));
+        }
+    }
+    public void downloadFile(Long importId) {
+        String objectPath = "imports/" + importId + ".csv";
+
+        try {
+            InputStream fileStream = minioClient.getObject(
+                    GetObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectPath)
+                            .build()
+            );
+
+            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment; filename=" + importId + ".csv");
+
+            try (OutputStream out = response.getOutputStream()) {
+                fileStream.transferTo(out);
+            }
+
+            FacesContext.getCurrentInstance().responseComplete();
+
+        } catch (ConnectException e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error downloading file: File storage is not available.", null));
+            System.out.println("Error downloading file: " + e.getMessage() + " class: " + e.getClass());
+
+        } catch (ErrorResponseException e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error downloading file: File with this id does not exist in file storage.", null));
+            System.out.println("Error downloading file: " + e.getMessage() + " class: " + e.getClass());
+
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error downloading file: " + e.getMessage(), null));
+            System.out.println("Error downloading file: " + e.getMessage() + " class: " + e.getClass());
         }
     }
     private void loadImportHistory() {

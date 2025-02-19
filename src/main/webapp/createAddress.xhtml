@@ -36,7 +36,7 @@
                 <label for="town" class="form-label">Город:</label>
                 <h:selectOneMenu id="town" value="#{addressBean.selectedLocationId}" class="form-select">
                     <f:selectItems value="#{addressBean.existingLocations}" var="loc"
-                                   itemLabel="#{loc}" itemValue="#{loc.id}" />
+                                   itemLabel="#{loc.id}" itemValue="#{loc.name}" />
                     <f:validator validatorId="addressValidator" />
                 </h:selectOneMenu>
                 <h:message for="town" class="text-danger" />

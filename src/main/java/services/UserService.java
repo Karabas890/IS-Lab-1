@@ -1,11 +1,14 @@
 package services;
 
 import entities.User;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import jakarta.faces.context.FacesContext;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.List;
 
 public class UserService implements Serializable {
@@ -20,6 +23,7 @@ public class UserService implements Serializable {
             entityManager.merge(user);
         }
     }
+
     public User findByUsernameAndPassword(String username, String password) {
         List<User> users = entityManager.createQuery(
                         "SELECT u FROM User u WHERE u.username = :username AND u.password = :password", User.class)
