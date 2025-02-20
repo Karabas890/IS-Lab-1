@@ -408,6 +408,8 @@ public class ProductService implements Serializable{
             //importEntry.setCountAdded(addedCount);
            // entityManager.merge(importEntry);
             DataWebSocket.broadcast("importProducts");
+            // Выброс исключения для тестирования
+            //throw new RuntimeException("Тестовая ошибка после операций с БД, но до соохранения в MinIO");
         } catch (Exception e) {
             //importEntry.setStatus("FAILED");
             DataWebSocket.broadcast("importProducts");

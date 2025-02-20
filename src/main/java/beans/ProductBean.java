@@ -764,8 +764,18 @@ public class ProductBean implements Serializable {
             }
 
             // После того, как все вложенные объекты сохранены, сохраняем продукты
+                try{
+                productService.importProducts(products);}
+                catch (RuntimeException e){
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка между сохранением в БД и хранилище: " + e.getMessage(), null));
+                    utx.rollback();
+                    file = null;
+                    errorBean.sendError();
+                    return; // выход из метода
 
-                productService.importProducts(products);
+                }
+
             System.out.println("All ok with DB, check minio: "+objectPath);
                 try (InputStream inputStream = file.getInputStream()) {
                     minioClient.putObject(
