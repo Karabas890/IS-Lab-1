@@ -418,6 +418,16 @@ public class ProductService implements Serializable{
     public void saveImportHistory(ImportHistory importEntry) {
         entityManager.merge(importEntry);
     }
+    @Transactional
+    public ImportHistory createImportHistory(ImportHistory importHistory) {
+        entityManager.persist(importHistory);
+        return importHistory;  // Возвращаем сохраненный объект
+    }
+    @Transactional
+    public void updateImportHistory(ImportHistory importHistory) {
+        entityManager.merge(importHistory);
+    }
+
 
     public List<ImportHistory> getAllImportHistory() {
         return entityManager.createQuery("SELECT i FROM ImportHistory i ORDER BY i.id DESC", ImportHistory.class)

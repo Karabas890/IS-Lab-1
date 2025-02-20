@@ -2,12 +2,16 @@ package entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
 @Data
+@Setter
+@Getter
 @Table(name = "ImportHistory")
 public class ImportHistory {
     @Id
@@ -25,6 +29,22 @@ public class ImportHistory {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+    public ImportHistory(){}
+    public ImportHistory(String status, String username, Integer countAdded){
+        this.status = status;
+        this.username = username;
+        this.countAdded = countAdded;
+    }
+    @Override
+    public String toString() {
+        return "ImportHistory{" +
+                "id=" + id +
+                ", status='" + status + '\'' +
+                ", username='" + username + '\'' +
+                ", countAdded=" + countAdded +
+                ", createdAt=" + createdAt +
+                '}';
     }
 
 

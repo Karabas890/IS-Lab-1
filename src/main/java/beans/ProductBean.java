@@ -680,13 +680,19 @@ public class ProductBean implements Serializable {
     public void importProducts() throws IOException {
 
         System.out.println("importProducts uploadedFile: "+ file);
+        User currentUser = userBean.getCurrentUser();
         minioErrorMessage = null; // Сбрасываем сообщение при начале импорта
         errorMessage = null;
         successMessage = null;  // Очищаем сообщения при новом запуске
-        ImportHistory importEntry = new ImportHistory();
-        importEntry.setStatus("IN_PROGRESS");
-        String objectPath = "imports/" + importEntry.getId() + ".csv";
-        User currentUser = userBean.getCurrentUser();
+        ImportHistory importEntry = productService.createImportHistory(new ImportHistory("FAILED", currentUser.getUsername(), null));
+        //productService.saveImportHistory(importEntry);
+        //importEntry.setStatus("FAILED");
+        Long importEntryId=importEntry.getId();
+        System.out.println("importEntryId: "+importEntryId);
+        String importEntryIdString = importEntryId.toString();
+        System.out.println("importEntryIdString: "+importEntryIdString);
+        String objectPath = "imports/" + importEntryIdString + ".csv";
+        System.out.println("objectPath: "+objectPath);
         importEntry.setUsername(currentUser.getUsername());
         if (file == null || file.getSize() == 0) {
             System.out.println("importProducts uploadedFile is null:");
@@ -760,7 +766,7 @@ public class ProductBean implements Serializable {
             // После того, как все вложенные объекты сохранены, сохраняем продукты
 
                 productService.importProducts(products);
-            System.out.println("All ok with DB, check minio:");
+            System.out.println("All ok with DB, check minio: "+objectPath);
                 try (InputStream inputStream = file.getInputStream()) {
                     minioClient.putObject(
                             PutObjectArgs.builder()
@@ -776,7 +782,7 @@ public class ProductBean implements Serializable {
 
             importEntry.setStatus("SUCCESS");
             importEntry.setCountAdded(addedCount);
-            productService.saveImportHistory(importEntry);
+            productService.updateImportHistory(importEntry);
             file = null;
             successMessage = "Импорт успешно завершен!";
             //setMessage("Импорт успешно завершен!", "alert-success");
@@ -784,8 +790,8 @@ public class ProductBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Импорт успешно завершен!", null));
 
         }catch (ConnectException e) {
-            importEntry.setStatus("FAILED");
-            productService.saveImportHistory(importEntry);
+            //importEntry.setStatus("FAILED");
+            //productService.saveImportHistory(importEntry);
             //productService.saveImportHistory(importEntry);
             //importEntry.set("Ошибка MinIO: " + e.getMessage()); // Если есть поле для ошибок
             file = null;
@@ -813,8 +819,8 @@ public class ProductBean implements Serializable {
 
         } catch (IllegalArgumentException e) {
             file = null;
-            importEntry.setStatus("FAILED");
-            productService.saveImportHistory(importEntry);
+            //importEntry.setStatus("FAILED");
+            //productService.saveImportHistory(importEntry);
             errorBean.sendError();
             errorMessage = "Ошибка в данных: " + e.getMessage();
             //setMessage("Ошибка в данных: " + e.getMessage(), "alert-danger");
@@ -822,8 +828,8 @@ public class ProductBean implements Serializable {
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка в данных: " + e.getMessage(), null));
         } catch (Exception e) {
             file = null;
-            importEntry.setStatus("FAILED");
-            productService.saveImportHistory(importEntry);
+            //importEntry.setStatus("FAILED");
+            //productService.saveImportHistory(importEntry);
             errorBean.sendError();
             errorMessage = "Ошибка импорта: " + e.getMessage();
             setMessage("Ошибка импорта: " + e.getMessage(), "alert-danger");
@@ -856,17 +862,17 @@ public class ProductBean implements Serializable {
 
         } catch (ConnectException e) {
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error downloading file: File storage is not available.", null));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка загрузки файла: Хранилище файлов недоступно.", null));
             System.out.println("Error downloading file: " + e.getMessage() + " class: " + e.getClass());
 
         } catch (ErrorResponseException e) {
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error downloading file: File with this id does not exist in file storage.", null));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка загрузки файла: Файл с этим id не существует в хранилище.", null));
             System.out.println("Error downloading file: " + e.getMessage() + " class: " + e.getClass());
 
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error downloading file: " + e.getMessage(), null));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка загрузки файла:" + e.getMessage(), null));
             System.out.println("Error downloading file: " + e.getMessage() + " class: " + e.getClass());
         }
     }

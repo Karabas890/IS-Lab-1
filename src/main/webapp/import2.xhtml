@@ -127,7 +127,13 @@
             <p:dataTable id="importTable" value="#{productBean.paginatedImportHistory}" var="import"
                          styleClass="table">
                <p:column headerText="ID">
-                  <h:outputText value="#{import.id}"/>
+                  <f:facet name="header">ID</f:facet>
+                  <h:commandLink value="#{import.id}" action="#{productBean.downloadFile(import.id)}"
+                                 rendered="#{import.status eq 'SUCCESS'}">
+                     <f:param name="importId" value="#{history.id}" />
+                  </h:commandLink>
+                  <!-- Только текст для статуса не SUCCESS -->
+                  <h:outputText value="#{import.id}" rendered="#{import.status ne 'SUCCESS'}" />
                </p:column>
                <p:column headerText="Пользователь">
                   <h:outputText value="#{import.username}"/>
